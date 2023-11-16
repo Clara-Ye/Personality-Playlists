@@ -126,6 +126,27 @@ full_artist_centric = pd.merge(full_artist_centric, acoustic_features_avg,
 print(full_artist_centric.head())
 print(full_artist_centric.columns)
 
+#
+# genre-centric
+#
+
+# initialize dataframe
+full_genre_centric = pd.DataFrame({'genre': GENRE_LIST})
+
+# get list of artists
+artist_ids_by_genre = full_artist_centric.groupby('main_genre')['artist_id'].agg(list).reset_index()
+full_genre_centric = pd.merge(full_genre_centric, artist_ids_by_genre,
+                              left_on='genre', right_on='main_genre', how='left')
+full_genre_centric = full_genre_centric.rename(columns={'artist_id': 'artist_ids'})
+
+# get acoustic features by genre
+acoustic_features_by_genre = full_artist_centric.groupby('main_genre')[acoustic_features].mean().reset_index()
+full_genre_centric = pd.merge(full_genre_centric, acoustic_features_by_genre,
+                              left_on='genre', right_on='main_genre', how='left')
+
+print(full_genre_centric)
+print(full_genre_centric.columns)
+
 
 ###################
 #  output files   #
@@ -134,7 +155,10 @@ print(full_artist_centric.columns)
 # csv
 full_song_centric.to_csv('../musicOset_song_centric_clean.csv', index=False)
 full_artist_centric.to_csv('../musicOset_artist_centric_clean.csv', index=False)
+full_genre_centric.to_csv('../musicOset_genre_centric_clean.csv', index=False)
+
 
 # json
 full_song_centric.to_json('../musicOset_song_centric_clean.json', orient='records')
 full_artist_centric.to_json('../musicOset_artist_centric_clean.json', orient='records')
+full_genre_centric.to_json('../musicOset_genre_centric_clean.json', orient='records')
