@@ -1,10 +1,11 @@
 
 class GenreVis {
 
-    constructor(_parentElement, _data, _eventHandler) {
+    constructor(_parentElement, _genreData, _artistData, _songData) {
         this.parentElement = _parentElement;
-        this.data = _data;
-        this.eventHandler = _eventHandler;
+        this.genreData = _genreData;
+        this.artistData = _artistData;
+        this.songData = _songData;
 
         this.initVis();
     }
@@ -28,4 +29,29 @@ class GenreVis {
         let vis = this;
 
     }
+
+    handleMainMouseOver(event, d) {
+
+    }
+
+    handleMainMouseOut(event, d) {
+
+    }
+
+    handleMainMouseClick(event, d) {
+
+    }
+
+    handleTooltipMouseOver(event, d) {
+
+    }
+
+    handleTooltipMouseOut(event, d) {
+
+    }
+
+    handleTooltipMouseClick(event, d) {
+
+    }
+
 }
