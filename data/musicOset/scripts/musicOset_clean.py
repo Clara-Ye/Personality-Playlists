@@ -156,7 +156,10 @@ acoustic_features_by_genre = full_artist_centric.groupby('main_genre')[acoustic_
 full_genre_centric = pd.merge(full_genre_centric, acoustic_features_by_genre,
                               left_on='genre', right_on='main_genre', how='left')
 
-print(full_genre_centric)
+# drop repetitive columns
+full_genre_centric.drop(["main_genre_x", "main_genre_y"], axis=1, inplace=True)
+
+print(full_genre_centric.head())
 print(full_genre_centric.columns)
 
 
