@@ -1,6 +1,7 @@
 import ast
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 pd.set_option('display.max_columns', None)
 from genre_mapping import genre_mapping, uncertain_label
 
@@ -8,6 +9,7 @@ GENRE_LIST = [
     'classical', 'pop', 'R&B', 'country', 'EDM', 'metal', 'rock',
     'jazz', 'hip hop', 'folk', 'world', 'ambient', 'synthwave'
     ]
+
 
 ###################
 #    read data    #
@@ -68,6 +70,17 @@ tracks.drop(["release_date"], axis=1, inplace=True)
 acoustics.drop(["duration_ms", "key", "mode", "time_signature",
                 "danceability", "energy", "liveness"], axis=1, inplace=True)
 
+# center and scale acoustic features
+scaler = MinMaxScaler()
+acoustic_features = list(acoustics.columns.drop(['song_id']))
+acoustics_scaled = pd.DataFrame(
+    scaler.fit_transform(acoustics[acoustic_features]),
+    columns=acoustic_features)
+acoustics = pd.concat([acoustics, acoustics_scaled.add_suffix('_scaled')], axis=1)
+
+# redefine acoustic features with scaled versions included
+acoustic_features = list(acoustics.columns.drop(['song_id']))
+
 
 ###################
 #   combine DFs   #
@@ -117,7 +130,6 @@ full_artist_centric = full_artist_centric.rename(columns={'song_id': 'song_ids'}
 
 # get average acoustic features of the songs
 # TODO: do we need max/min/any other aggregate stats?
-acoustic_features = list(acoustics.columns.drop(['song_id']))
 temp = pd.merge(temp, acoustics, on='song_id', how='left')
 acoustic_features_avg = temp.groupby('artist_id')[acoustic_features].mean().reset_index()
 full_artist_centric = pd.merge(full_artist_centric, acoustic_features_avg,
@@ -156,7 +168,6 @@ print(full_genre_centric.columns)
 full_song_centric.to_csv('../musicOset_song_centric_clean.csv', index=False)
 full_artist_centric.to_csv('../musicOset_artist_centric_clean.csv', index=False)
 full_genre_centric.to_csv('../musicOset_genre_centric_clean.csv', index=False)
-
 
 # json
 full_song_centric.to_json('../musicOset_song_centric_clean.json', orient='records')
