@@ -5,8 +5,8 @@ pd.set_option('display.max_columns', None)
 from genre_mapping import genre_mapping, uncertain_label
 
 GENRE_LIST = [
-    'classical', 'pop', 'R&B', 'soul', 'country', 'EDM', 'metal',
-    'rock', 'jazz', 'hip hop', 'folk', 'world', 'ambient' 'retrowave'
+    'classical', 'pop', 'R&B', 'country', 'EDM', 'metal', 'rock',
+    'jazz', 'hip hop', 'folk', 'world', 'ambient', 'synthwave'
     ]
 
 ###################
