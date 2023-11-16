@@ -4,6 +4,10 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 from genre_mapping import genre_mapping, uncertain_label
 
+GENRE_LIST = [
+    'classical', 'pop', 'R&B', 'soul', 'country', 'EDM', 'metal',
+    'rock', 'jazz', 'hip hop', 'folk', 'world', 'ambient' 'retrowave'
+    ]
 
 ###################
 #    read data    #
@@ -40,6 +44,9 @@ artists.drop(["followers", "image_url"], axis=1, inplace=True)
 artists['main_genre_detailed'] = artists['main_genre']
 artists['main_genre'] = artists['main_genre_detailed'].replace(genre_mapping)
 
+# set out-of-vocabulary genres to "Other"
+artists['main_genre'] = artists['main_genre'].map(lambda x: x if x in GENRE_LIST else 'Other')
+
 
 ###################
 #  clean tracks   #
@@ -58,8 +65,8 @@ tracks.drop(["release_date"], axis=1, inplace=True)
 ###################
 
 # drop unneeded columns
-# TODO: decide which features to include
-acoustics.drop(["duration_ms", "key", "mode", "time_signature"], axis=1, inplace=True)
+acoustics.drop(["duration_ms", "key", "mode", "time_signature",
+                "danceability", "energy", "liveness"], axis=1, inplace=True)
 
 
 ###################
