@@ -140,12 +140,10 @@ class GenreVis {
             .text(d => d.name);
         vis.tooltip.labels.exit().remove();
 
-        // define line element
+        // initialize helpers for paths
         vis.tooltip.line = d3.line()
             .x(d => d.x)
             .y(d => d.y);
-
-        // define path group
         vis.tooltip.pathGroup = vis.tooltip.svg.append("g")
             .attr("class", "radar-path");
 
@@ -215,7 +213,8 @@ class GenreVis {
                     else { return `${event.pageX - vis.width/2 - 10}px`; }
                 })
                 .style("top", function() {
-                    if (event.pageY < (vis.height + vis.margin.top + vis.margin.bottom) / 2) { return `${event.pageY}px`; }
+                    if (event.pageY < vis.height / 2.5) { return `${event.pageY}px`; }
+                    else if (event.pageY < vis.height / 1.2) {return `${vis.height/4}px`; }
                     else {return `${event.pageY - vis.height/2}px`; }
                 });
         }
@@ -239,6 +238,8 @@ class GenreVis {
                 .attr('stroke-width', '3px')
                 .attr('stroke', '#c67ca2');
 
+            console.log(element);
+
             // disable hover responses
             vis.hoverEnabled = false;
 
@@ -253,7 +254,8 @@ class GenreVis {
                     else { return `${event.pageX - vis.width/2 - 10}px`; }
                 })
                 .style("top", function() {
-                    if (event.pageY < (vis.height + vis.margin.top + vis.margin.bottom) / 2) { return `${event.pageY}px`; }
+                    if (event.pageY < vis.height / 2.5) { return `${event.pageY}px`; }
+                    else if (event.pageY < vis.height / 1.2) {return `${vis.height/4}px`; }
                     else {return `${event.pageY - vis.height/2}px`; }
                 });
 
@@ -310,7 +312,10 @@ class GenreVis {
     angleToCoordinate(angle, value, vis){
         let x = Math.cos(angle) * vis.tooltip.scale(value);
         let y = Math.sin(angle) * vis.tooltip.scale(value);
-        return {"x": vis.tooltip.svgWidth / 2 - vis.tooltip.margin.left + x, "y": vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top - y};
+        return {
+            "x": vis.tooltip.svgWidth / 2 - vis.tooltip.margin.left + x,
+            "y": vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top - y
+        };
     }
 
     getPathCoordinates(data, vis) {
