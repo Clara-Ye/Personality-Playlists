@@ -51,14 +51,12 @@ class GenreVis {
             .attr('id', 'genre-tooltip')
             .html(`
                 <div class="row" id="genre-tooltip-container">
-                    <!-- radar chart -->
-                    <div class="col-6 genre-tooltip-col">
-                        <div id="genre-name-container">aaa</div>
+                    <div class="col-12">
+                        <div id="genre-name-container">Genre Name</div>
+                        <!-- radar chart -->
                         <div id="radar-chart-container"></div>
-                    </div>
-                    <!-- description -->
-                    <div class="col-6 genre-tooltip-col">
-                        <div id="genre-intro-container">aaa</div>
+                        <!-- description -->
+                        <div id="genre-intro-container">Genre intro</div>
                     </div>
                 </div>`);
 
@@ -68,9 +66,9 @@ class GenreVis {
         // init radar chart drawing area
         vis.tooltip.margin = {top: 20, right: 20, bottom: 20, left: 20};
         vis.tooltip.width = vis.width / 2;
-        vis.tooltip.height = vis.height / 2;
-        vis.tooltip.svgWidth = (vis.tooltip.width - vis.tooltip.margin.left - vis.tooltip.margin.right) / 2;
-        vis.tooltip.svgHeight = vis.tooltip.height - vis.tooltip.margin.top - vis.tooltip.margin.bottom;
+        vis.tooltip.height = vis.height * 0.75;
+        vis.tooltip.svgWidth = vis.tooltip.width - vis.tooltip.margin.left - vis.tooltip.margin.right;
+        vis.tooltip.svgHeight = (vis.tooltip.height - vis.tooltip.margin.top - vis.tooltip.margin.bottom) / 2;
 
         document.getElementById("genre-tooltip-container").style.width = `${vis.tooltip.width}px`;
         document.getElementById("genre-tooltip-container").style.height = `${vis.tooltip.height}px`;
@@ -81,6 +79,66 @@ class GenreVis {
             .attr("height", vis.tooltip.svgHeight)
             .append("g")
             .attr('transform', `translate (${vis.tooltip.margin.left}, ${vis.tooltip.margin.top})`);
+
+        // draw radar chart axis
+
+        // init scales
+        vis.tooltip.scale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, vis.tooltip.svgHeight / 3 - 2]);
+        vis.tooltip.ticks = [.25, .5, .75, 1];
+
+        // draw radar chart circles
+        vis.tooltip.svg.selectAll("circle")
+            .data(vis.tooltip.ticks)
+            .join(
+                enter => enter.append("circle")
+                    .attr("cx", vis.tooltip.svgWidth / 2  - vis.tooltip.margin.left)
+                    .attr("cy", vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top)
+                    .attr("fill", "none")
+                    .attr("stroke", "gray")
+                    .attr("r", d => vis.tooltip.scale(d))
+            );
+
+        // get axis data
+        vis.tooltip.features = ['acousticness', 'instrumentalness', 'loudness', 'speechiness', 'tempo', 'valence']
+        vis.tooltip.featureData = vis.tooltip.features.map((f, i) => {
+            let angle = (Math.PI / 2) + (2 * Math.PI * i / vis.tooltip.features.length);
+            return {
+                "name": f,
+                "angle": angle,
+                "line_coord": vis.angleToCoordinate(angle, 1, vis),
+                "label_coord": vis.angleToCoordinate(angle, 1.1, vis)
+            };
+        });
+
+        // draw axis line
+        vis.tooltip.svg.selectAll("line")
+            .data(vis.tooltip.featureData)
+            .enter()
+            .append("line")
+            .attr("x1", vis.tooltip.svgWidth / 2  - vis.tooltip.margin.left)
+            .attr("y1", vis.tooltip.svgHeight / 2  - vis.tooltip.margin.top)
+            .attr("x2", d => d.line_coord.x)
+            .attr("y2", d => d.line_coord.y)
+            .attr("stroke","black");
+
+        // draw axis label
+        vis.tooltip.labels = vis.tooltip.svg.selectAll(".axislabel")
+            .data(vis.tooltip.featureData);
+        vis.tooltip.labels
+            .enter()
+            .append("text")
+            .merge(vis.tooltip.labels)
+            .attr("x", d => d.label_coord.x)
+            .attr("y", d => d.label_coord.y + 5)
+            .attr("text-anchor", function(d) {
+                if (d.label_coord.x < vis.tooltip.svgWidth / 3) { return "end"; }
+                else if (d.label_coord.x < vis.tooltip.svgWidth / 2.1) { return "middle"; }
+                else { return "start"; }
+            })
+            .text(d => d.name);
+        vis.tooltip.labels.exit().remove();
 
         vis.wrangleData();
     }
@@ -137,6 +195,9 @@ class GenreVis {
             d3.select(element)
                 .attr('stroke-width', '3px')
                 .attr('stroke', '#1e1f22');
+
+            // draw radar chart on tooltip
+            vis.drawRadarChart(d, vis);
 
             // display tooltip
             vis.tooltip
@@ -213,6 +274,16 @@ class GenreVis {
 
     handleTooltipMouseClick(event, d) {
 
+    }
+
+    drawRadarChart(d, vis) {
+
+    }
+
+    angleToCoordinate(angle, value, vis){
+        let x = Math.cos(angle) * vis.tooltip.scale(value);
+        let y = Math.sin(angle) * vis.tooltip.scale(value);
+        return {"x": vis.tooltip.svgWidth / 2 - vis.tooltip.margin.left + x, "y": vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top - y};
     }
 
 }
