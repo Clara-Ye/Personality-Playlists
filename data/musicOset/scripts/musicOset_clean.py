@@ -1,8 +1,14 @@
 import ast
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 pd.set_option('display.max_columns', None)
 from genre_mapping import genre_mapping, uncertain_label
+
+GENRE_LIST = [
+    'classical', 'pop', 'R&B', 'country', 'EDM', 'metal', 'rock',
+    'jazz', 'hip hop', 'folk', 'world', 'ambient', 'synthwave'
+    ]
 
 
 ###################
@@ -40,6 +46,9 @@ artists.drop(["followers", "image_url"], axis=1, inplace=True)
 artists['main_genre_detailed'] = artists['main_genre']
 artists['main_genre'] = artists['main_genre_detailed'].replace(genre_mapping)
 
+# set out-of-vocabulary genres to "Other"
+artists['main_genre'] = artists['main_genre'].map(lambda x: x if x in GENRE_LIST else 'Other')
+
 
 ###################
 #  clean tracks   #
@@ -58,8 +67,19 @@ tracks.drop(["release_date"], axis=1, inplace=True)
 ###################
 
 # drop unneeded columns
-# TODO: decide which features to include
-acoustics.drop(["duration_ms", "key", "mode", "time_signature"], axis=1, inplace=True)
+acoustics.drop(["duration_ms", "key", "mode", "time_signature",
+                "danceability", "energy", "liveness"], axis=1, inplace=True)
+
+# center and scale acoustic features
+scaler = MinMaxScaler()
+acoustic_features = list(acoustics.columns.drop(['song_id']))
+acoustics_scaled = pd.DataFrame(
+    scaler.fit_transform(acoustics[acoustic_features]),
+    columns=acoustic_features)
+acoustics = pd.concat([acoustics, acoustics_scaled.add_suffix('_scaled')], axis=1)
+
+# redefine acoustic features with scaled versions included
+acoustic_features = list(acoustics.columns.drop(['song_id']))
 
 
 ###################
@@ -110,7 +130,6 @@ full_artist_centric = full_artist_centric.rename(columns={'song_id': 'song_ids'}
 
 # get average acoustic features of the songs
 # TODO: do we need max/min/any other aggregate stats?
-acoustic_features = list(acoustics.columns.drop(['song_id']))
 temp = pd.merge(temp, acoustics, on='song_id', how='left')
 acoustic_features_avg = temp.groupby('artist_id')[acoustic_features].mean().reset_index()
 full_artist_centric = pd.merge(full_artist_centric, acoustic_features_avg,
@@ -118,6 +137,30 @@ full_artist_centric = pd.merge(full_artist_centric, acoustic_features_avg,
 
 print(full_artist_centric.head())
 print(full_artist_centric.columns)
+
+#
+# genre-centric
+#
+
+# initialize dataframe
+full_genre_centric = pd.DataFrame({'genre': GENRE_LIST})
+
+# get list of artists
+artist_ids_by_genre = full_artist_centric.groupby('main_genre')['artist_id'].agg(list).reset_index()
+full_genre_centric = pd.merge(full_genre_centric, artist_ids_by_genre,
+                              left_on='genre', right_on='main_genre', how='left')
+full_genre_centric = full_genre_centric.rename(columns={'artist_id': 'artist_ids'})
+
+# get acoustic features by genre
+acoustic_features_by_genre = full_artist_centric.groupby('main_genre')[acoustic_features].mean().reset_index()
+full_genre_centric = pd.merge(full_genre_centric, acoustic_features_by_genre,
+                              left_on='genre', right_on='main_genre', how='left')
+
+# drop repetitive columns
+full_genre_centric.drop(["main_genre_x", "main_genre_y"], axis=1, inplace=True)
+
+print(full_genre_centric.head())
+print(full_genre_centric.columns)
 
 
 ###################
@@ -127,7 +170,9 @@ print(full_artist_centric.columns)
 # csv
 full_song_centric.to_csv('../musicOset_song_centric_clean.csv', index=False)
 full_artist_centric.to_csv('../musicOset_artist_centric_clean.csv', index=False)
+full_genre_centric.to_csv('../musicOset_genre_centric_clean.csv', index=False)
 
 # json
 full_song_centric.to_json('../musicOset_song_centric_clean.json', orient='records')
 full_artist_centric.to_json('../musicOset_artist_centric_clean.json', orient='records')
+full_genre_centric.to_json('../musicOset_genre_centric_clean.json', orient='records')
