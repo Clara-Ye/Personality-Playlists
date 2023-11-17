@@ -27,12 +27,30 @@ class GenreVis {
             .append("g")
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
 
+        // add dummy rectangle for event listening
+        vis.svg.append("rect")
+            .attr("x", -vis.margin.left)
+            .attr("y", -vis.margin.top)
+            .attr("width", vis.width)
+            .attr("height", vis.height)
+            .attr("fill", "rgba(0,0,0,0)")
+            .on('click', function(event, d) { vis.handleMainMouseClick(this, event, d, vis); } )
+
         // initialize icon dimensions and icon group
         vis.radius = (vis.width - vis.margin.left - vis.margin.right) / 15;
         vis.hSpacing = (vis.width - vis.margin.left - vis.margin.right) / 15 * 1.25;
         vis.vSpacing = (vis.height - vis.margin.top - vis.margin.bottom - 6 * vis.radius) / 6;
         vis.genreIcons = vis.svg.append("g")
             .attr("class", "genre-icon");
+
+        // add tooltip container
+        vis.tooltip = d3.select("body")
+            .append('div')
+            .attr('class', "tooltip")
+            .attr('id', 'genreTooltip');
+
+        // enable hovering for displaying tooltips
+        vis.hoverEnabled = true;
 
         vis.wrangleData();
     }
@@ -69,27 +87,92 @@ class GenreVis {
                 else { return 4 * vis.vSpacing + 5 * vis.radius; }
             })
             .attr("r", vis.radius)
-            .attr("fill", "#74729a");
+            .attr("fill", "#74729a")
+            .attr('stroke-width', '0px');
+
+        // add event listeners
+        vis.genreIcons.selectAll("circle")
+            .on('mouseover', function(event, d) { vis.handleCircleMouseOver(this, event, d, vis); } )
+            .on('mouseout', function(event, d) { vis.handleCircleMouseOut(this, event, d, vis); } )
+            .on('click', function(event, d) { vis.handleCircleMouseClick(this, event, d, vis); } );
 
     }
 
-    handleMainMouseOver(event, d) {
+    handleCircleMouseOver(element, event, d, vis) {
+
+        if (vis.hoverEnabled) {
+            console.log(d)
+
+            // highlight hovered element
+            d3.select(element)
+                .attr('stroke-width', '3px')
+                .attr('stroke', '#1e1f22');
+
+            // display tooltip
+            vis.tooltip
+                .style("opacity", 1)
+                .style("left", event.pageX + 20 + "px")
+                .style("top", event.pageY + "px")
+                .html(`
+                 <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
+                     <h3> ${d.genre} <h3>                   
+                 </div>`);
+        }
+    }
+
+    handleCircleMouseOut(element, event, d, vis) {
+
+        if (vis.hoverEnabled) {
+            // revert element highlight
+            d3.select(element).attr('stroke-width', '0px');
+            // hide tooltip
+            vis.tooltip.style("opacity", 0);
+        }
+    }
+
+    handleCircleMouseClick(element, event, d, vis) {
+
+        if (vis.hoverEnabled) {
+            // highlight clicked element
+            d3.select(element)
+                .attr('stroke-width', '3px')
+                .attr('stroke', '#c67ca2');
+
+            // disable hover responses
+            vis.hoverEnabled = false;
+
+            // display tooltip
+            vis.tooltip
+                .style("opacity", 1)
+                .style("left", event.pageX + 20 + "px")
+                .style("top", event.pageY + "px")
+                .html(`
+                 <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
+                     <h3> ${d.genre} <h3>                   
+                 </div>`);
+        } else {
+            // enable hover responses
+            vis.hoverEnabled = true;
+            // revert element highlight and tooltip
+            vis.handleCircleMouseOut(element, event, d, vis);
+            vis.updateVis();
+        }
+    }
+
+    handleMainMouseClick(element, event, d, vis) {
+        if (!vis.hoverEnabled) {
+            // enable hover responses
+            vis.hoverEnabled = true;
+            vis.tooltip.style("opacity", 0);
+            vis.updateVis();
+        }
+    }
+
+    handleTooltipMouseOver(element, event, d, vis) {
 
     }
 
-    handleMainMouseOut(event, d) {
-
-    }
-
-    handleMainMouseClick(event, d) {
-
-    }
-
-    handleTooltipMouseOver(event, d) {
-
-    }
-
-    handleTooltipMouseOut(event, d) {
+    handleTooltipMouseOut(element, event, d, vis) {
 
     }
 
