@@ -140,6 +140,15 @@ class GenreVis {
             .text(d => d.name);
         vis.tooltip.labels.exit().remove();
 
+        // define line element
+        vis.tooltip.line = d3.line()
+            .x(d => d.x)
+            .y(d => d.y);
+
+        // define path group
+        vis.tooltip.pathGroup = vis.tooltip.svg.append("g")
+            .attr("class", "radar-path");
+
         vis.wrangleData();
     }
 
@@ -189,7 +198,6 @@ class GenreVis {
     handleCircleMouseOver(element, event, d, vis) {
 
         if (vis.hoverEnabled) {
-            console.log(d)
 
             // highlight hovered element
             d3.select(element)
@@ -234,6 +242,9 @@ class GenreVis {
             // disable hover responses
             vis.hoverEnabled = false;
 
+            // draw radar chart on tooltip
+            vis.drawRadarChart(d, vis);
+
             // display tooltip
             vis.tooltip
                 .style("opacity", 1)
@@ -276,14 +287,41 @@ class GenreVis {
 
     }
 
-    drawRadarChart(d, vis) {
+    drawRadarChart(data, vis) {
 
+        // draw the path element
+        vis.tooltip.paths = vis.tooltip.pathGroup
+            .selectAll("path")
+            .data([data]);
+
+        vis.tooltip.paths
+            .enter()
+            .append("path")
+            .merge(vis.tooltip.paths)
+            .datum(d => vis.getPathCoordinates(d, vis))
+            .attr("d", vis.tooltip.line)
+            .attr("stroke-width", 1)
+            .attr("stroke", "gray")
+            .attr("fill", "#74729a")
+            .attr("stroke-opacity", 1)
+            .attr("opacity", 0.75);
     }
 
     angleToCoordinate(angle, value, vis){
         let x = Math.cos(angle) * vis.tooltip.scale(value);
         let y = Math.sin(angle) * vis.tooltip.scale(value);
         return {"x": vis.tooltip.svgWidth / 2 - vis.tooltip.margin.left + x, "y": vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top - y};
+    }
+
+    getPathCoordinates(data, vis) {
+        console.log(data);
+        let coordinates = [];
+        for (var i = 0; i < vis.tooltip.features.length; i++){
+            let ft_name = `${vis.tooltip.features[i]}_scaled`;
+            let angle = (Math.PI / 2) + (2 * Math.PI * i / vis.tooltip.features.length);
+            coordinates.push(vis.angleToCoordinate(angle, data[ft_name], vis));
+        }
+        return coordinates;
     }
 
 }
