@@ -1,0 +1,11 @@
+#genre-tooltip-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
+    padding: 20px;
+}
+
+.genre-tooltip-col {
+    width: 50%;
+    height: 100%;
+}

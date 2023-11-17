@@ -44,13 +44,43 @@ class GenreVis {
             .attr("class", "genre-icon");
 
         // add tooltip container
+        // TODO: add section for artists and songs
         vis.tooltip = d3.select("body")
             .append('div')
             .attr('class', "tooltip")
-            .attr('id', 'genreTooltip');
+            .attr('id', 'genre-tooltip')
+            .html(`
+                <div class="row" id="genre-tooltip-container">
+                    <!-- radar chart -->
+                    <div class="col-6 genre-tooltip-col">
+                        <div id="genre-name-container">aaa</div>
+                        <div id="radar-chart-container"></div>
+                    </div>
+                    <!-- description -->
+                    <div class="col-6 genre-tooltip-col">
+                        <div id="genre-intro-container">aaa</div>
+                    </div>
+                </div>`);
 
         // enable hovering for displaying tooltips
         vis.hoverEnabled = true;
+
+        // init radar chart drawing area
+        vis.tooltip.margin = {top: 20, right: 20, bottom: 20, left: 20};
+        vis.tooltip.width = vis.width / 2;
+        vis.tooltip.height = vis.height / 2;
+        vis.tooltip.svgWidth = (vis.tooltip.width - vis.tooltip.margin.left - vis.tooltip.margin.right) / 2;
+        vis.tooltip.svgHeight = vis.tooltip.height - vis.tooltip.margin.top - vis.tooltip.margin.bottom;
+
+        document.getElementById("genre-tooltip-container").style.width = `${vis.tooltip.width}px`;
+        document.getElementById("genre-tooltip-container").style.height = `${vis.tooltip.height}px`;
+
+        vis.tooltip.svg = d3.select("#radar-chart-container")
+            .append("svg")
+            .attr("width", vis.tooltip.svgWidth)
+            .attr("height", vis.tooltip.svgHeight)
+            .append("g")
+            .attr('transform', `translate (${vis.tooltip.margin.left}, ${vis.tooltip.margin.top})`);
 
         vis.wrangleData();
     }
@@ -111,12 +141,14 @@ class GenreVis {
             // display tooltip
             vis.tooltip
                 .style("opacity", 1)
-                .style("left", event.pageX + 20 + "px")
-                .style("top", event.pageY + "px")
-                .html(`
-                 <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
-                     <h3> ${d.genre} <h3>                   
-                 </div>`);
+                .style("left", function() {
+                    if (event.pageX < (vis.width + vis.margin.left + vis.margin.right) / 2) { return `${event.pageX + 10}px`; }
+                    else { return `${event.pageX - vis.width/2 - 10}px`; }
+                })
+                .style("top", function() {
+                    if (event.pageY < (vis.height + vis.margin.top + vis.margin.bottom) / 2) { return `${event.pageY}px`; }
+                    else {return `${event.pageY - vis.height/2}px`; }
+                });
         }
     }
 
@@ -144,12 +176,15 @@ class GenreVis {
             // display tooltip
             vis.tooltip
                 .style("opacity", 1)
-                .style("left", event.pageX + 20 + "px")
-                .style("top", event.pageY + "px")
-                .html(`
-                 <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
-                     <h3> ${d.genre} <h3>                   
-                 </div>`);
+                .style("left", function() {
+                    if (event.pageX < (vis.width + vis.margin.left + vis.margin.right) / 2) { return `${event.pageX + 10}px`; }
+                    else { return `${event.pageX - vis.width/2 - 10}px`; }
+                })
+                .style("top", function() {
+                    if (event.pageY < (vis.height + vis.margin.top + vis.margin.bottom) / 2) { return `${event.pageY}px`; }
+                    else {return `${event.pageY - vis.height/2}px`; }
+                });
+
         } else {
             // enable hover responses
             vis.hoverEnabled = true;
