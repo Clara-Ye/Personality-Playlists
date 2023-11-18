@@ -153,7 +153,8 @@ class GenreVis {
 
     handleMouseOver(element, event, d, vis) {
 
-        // TODO: make the element vibrate
+        // make the element vibrate
+        vis.shakeIcon(element, vis, d.tempo, d.loudness_scaled);
 
         // TODO: play sample track
 
@@ -188,7 +189,8 @@ class GenreVis {
 
     handleMouseOut(element, event, d, vis) {
 
-        // TODO: make the element stop vibrate
+        // make the element stop vibrate
+        vis.stopIcon(element, vis, d.tempo);
 
         // TODO: stop sample track
 
@@ -231,6 +233,34 @@ class GenreVis {
         vis.tooltipLarge
             .style("opacity", 0)
             .style("left", `-1080px`);
+    }
+
+    shakeIcon(element, vis, bpm, loudness) {
+
+        // get animation attributes
+        let frequency = bpm / 60;
+        let amplitude = loudness**2 * 20;
+
+        // vibrate
+        d3.select(element)
+            .transition()
+            .duration(1000 / frequency)
+            .attr("transform", "translate(0," + amplitude + ")")
+            .transition()
+            .duration(1000 / frequency)
+            .attr("transform", "translate(0," + -amplitude + ")")
+            // keep vibrating
+            .on("end", function() { vis.shakeIcon(element, vis, bpm, loudness); } );
+
+    }
+
+    stopIcon(element, vis, bpm) {
+
+        d3.select(element)
+            .transition()
+            .duration(1000 / (bpm / 60))
+            .attr("transform", "translate(0,0)");
+
     }
 
 }
