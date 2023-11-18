@@ -27,15 +27,6 @@ class GenreVis {
             .append("g")
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
 
-        // add dummy rectangle for event listening
-        vis.svg.append("rect")
-            .attr("x", -vis.margin.left)
-            .attr("y", -vis.margin.top)
-            .attr("width", vis.width)
-            .attr("height", vis.height)
-            .attr("fill", "rgba(0,0,0,0)")
-            .on('click', function(event, d) { vis.handleMainMouseClick(this, event, d, vis); } )
-
         // initialize icon dimensions and icon group
         vis.radius = (vis.width - vis.margin.left - vis.margin.right) / 15;
         vis.hSpacing = (vis.width - vis.margin.left - vis.margin.right) / 15 * 1.25;
@@ -43,109 +34,75 @@ class GenreVis {
         vis.genreIcons = vis.svg.append("g")
             .attr("class", "genre-icon");
 
-        // add tooltip container
-        // TODO: add section for artists and songs
-        vis.tooltip = d3.select("body")
+        // add small tooltip (hover) container
+        vis.tooltipSmall = d3.select("body")
             .append('div')
             .attr('class', "tooltip")
-            .attr('id', 'genre-tooltip')
+            .attr('id', 'genre-tooltip-small')
             .html(`
-                <div class="row" id="genre-tooltip-container">
+                <div class="row" id="genre-tooltip-small-container">
                     <div class="col-12">
-                        <div id="genre-name-container">Genre Name</div>
-                        <!-- radar chart -->
-                        <div id="radar-chart-container"></div>
+                        <!-- genre name -->
+                        <div id="genre-tooltip-small-name-container">Genre Name</div>
                         <!-- description -->
-                        <div id="genre-intro-container">Genre intro</div>
+                        <div id="genre-tooltip-small-intro-container">
+                            Ah, the enchanting world of music genres – where the beats are as diverse as my excuses for not doing thorough research. Today, we embark on a sonic journey through a genre that's so mysterious, even I couldn't bother finding out what it is. Picture this as the placeholder for your soon-to-be-discovered musical passion. It's like the suspense of a blind date, but with fewer awkward conversations and more notes playing hard to get. 
+                        </div>
+                    </div>
+                </div>`);
+        // set attributes
+        vis.tooltipSmall.style('opacity', 0);
+        vis.tooltipWidth = d3.min([vis.width / 2, 400]);
+        document.getElementById("genre-tooltip-small-container").style.width = `${vis.tooltipWidth}px`;
+
+        // add large tooltip (click) container
+        vis.tooltipLarge = d3.select("body")
+            .append('div')
+            .attr('class', "tooltip")
+            .attr('id', 'genre-tooltip-large')
+            .html(`
+                <div class="row" id="genre-tooltip-large-container">
+                    <div class="col-12">
+                        <!-- headline -->
+                        <div class="row">
+                            <!-- genre name -->
+                            <div class="col-11">
+                                <div id="genre-tooltip-large-name-container">Genre Name</div>                           
+                            </div>
+                            <!-- exit button -->
+                            <div class="col-1">
+                                <div class="exit-button" id="genre-tooltip-large-exit-button">
+                                    <i class="fas fa-times"></i>
+                                </div>                                
+                            </div>
+                        </div>
+                        <!-- content -->
+                        <div class="row" style="width: 100%; height: 100%">
+                            <!-- radar chart -->
+                            <div class="col-7">
+                                <div id="radar-vis" style="width: 100%; height: 100%"></div>
+                            </div>
+                            <!-- description -->
+                            <div class="col-5">
+                                <div id="genre-tooltip-large-intro-container">
+                                    Ah, the enchanting world of music genres – where the beats are as diverse as my excuses for not doing thorough research. Today, we embark on a sonic journey through a genre that's so mysterious, even I couldn't bother finding out what it is. Picture this as the placeholder for your soon-to-be-discovered musical passion. It's like the suspense of a blind date, but with fewer awkward conversations and more notes playing hard to get. 
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>`);
 
-        // enable hovering for displaying tooltips
-        vis.hoverEnabled = true;
+        // set attributes
+        vis.tooltipLarge.style('opacity', 0);
+        document.getElementById("genre-tooltip-large-container").style.width = `${vis.width}px`;
+        document.getElementById("genre-tooltip-large-container").style.height = `${vis.height * 0.7}px`;
 
-        // init radar chart drawing area
-        vis.tooltip.margin = {top: 20, right: 20, bottom: 20, left: 20};
-        vis.tooltip.width = vis.width / 2;
-        vis.tooltip.height = vis.height * 0.75;
-        vis.tooltip.svgWidth = vis.tooltip.width - vis.tooltip.margin.left - vis.tooltip.margin.right;
-        vis.tooltip.svgHeight = (vis.tooltip.height - vis.tooltip.margin.top - vis.tooltip.margin.bottom) / 2;
+        // create radar chart instance
+        vis.radarVis = new RadarVis("radar-vis", vis.genreData[0]);
 
-        document.getElementById("genre-tooltip-container").style.width = `${vis.tooltip.width}px`;
-        document.getElementById("genre-tooltip-container").style.height = `${vis.tooltip.height}px`;
-
-        vis.tooltip.svg = d3.select("#radar-chart-container")
-            .append("svg")
-            .attr("width", vis.tooltip.svgWidth)
-            .attr("height", vis.tooltip.svgHeight)
-            .append("g")
-            .attr('transform', `translate (${vis.tooltip.margin.left}, ${vis.tooltip.margin.top})`);
-
-        // draw radar chart axis
-
-        // init scales
-        vis.tooltip.scale = d3.scaleLinear()
-            .domain([0, 1])
-            .range([0, vis.tooltip.svgHeight / 3 - 2]);
-        vis.tooltip.ticks = [.25, .5, .75, 1];
-
-        // draw radar chart circles
-        vis.tooltip.svg.selectAll("circle")
-            .data(vis.tooltip.ticks)
-            .join(
-                enter => enter.append("circle")
-                    .attr("cx", vis.tooltip.svgWidth / 2  - vis.tooltip.margin.left)
-                    .attr("cy", vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top)
-                    .attr("fill", "none")
-                    .attr("stroke", "gray")
-                    .attr("r", d => vis.tooltip.scale(d))
-            );
-
-        // get axis data
-        vis.tooltip.features = ['acousticness', 'instrumentalness', 'loudness', 'speechiness', 'tempo', 'valence']
-        vis.tooltip.featureData = vis.tooltip.features.map((f, i) => {
-            let angle = (Math.PI / 2) + (2 * Math.PI * i / vis.tooltip.features.length);
-            return {
-                "name": f,
-                "angle": angle,
-                "line_coord": vis.angleToCoordinate(angle, 1, vis),
-                "label_coord": vis.angleToCoordinate(angle, 1.1, vis)
-            };
-        });
-
-        // draw axis line
-        vis.tooltip.svg.selectAll("line")
-            .data(vis.tooltip.featureData)
-            .enter()
-            .append("line")
-            .attr("x1", vis.tooltip.svgWidth / 2  - vis.tooltip.margin.left)
-            .attr("y1", vis.tooltip.svgHeight / 2  - vis.tooltip.margin.top)
-            .attr("x2", d => d.line_coord.x)
-            .attr("y2", d => d.line_coord.y)
-            .attr("stroke","black");
-
-        // draw axis label
-        vis.tooltip.labels = vis.tooltip.svg.selectAll(".axislabel")
-            .data(vis.tooltip.featureData);
-        vis.tooltip.labels
-            .enter()
-            .append("text")
-            .merge(vis.tooltip.labels)
-            .attr("x", d => d.label_coord.x)
-            .attr("y", d => d.label_coord.y + 5)
-            .attr("text-anchor", function(d) {
-                if (d.label_coord.x < vis.tooltip.svgWidth / 3) { return "end"; }
-                else if (d.label_coord.x < vis.tooltip.svgWidth / 2.1) { return "middle"; }
-                else { return "start"; }
-            })
-            .text(d => d.name);
-        vis.tooltip.labels.exit().remove();
-
-        // initialize helpers for paths
-        vis.tooltip.line = d3.line()
-            .x(d => d.x)
-            .y(d => d.y);
-        vis.tooltip.pathGroup = vis.tooltip.svg.append("g")
-            .attr("class", "radar-path");
+        // register exit icon to event listener
+        document.getElementById("genre-tooltip-large-exit-button")
+            .addEventListener("click", function(event) { vis.handleMouseClickOnExit(event, vis); } );
 
         vis.wrangleData();
     }
@@ -187,146 +144,93 @@ class GenreVis {
 
         // add event listeners
         vis.genreIcons.selectAll("circle")
-            .on('mouseover', function(event, d) { vis.handleCircleMouseOver(this, event, d, vis); } )
-            .on('mouseout', function(event, d) { vis.handleCircleMouseOut(this, event, d, vis); } )
-            .on('click', function(event, d) { vis.handleCircleMouseClick(this, event, d, vis); } );
+            .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
+            .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, d, vis); } )
+            .on('click', function(event, d) { vis.handleMouseClick(this, event, d, vis); } );
 
     }
 
-    handleCircleMouseOver(element, event, d, vis) {
 
-        if (vis.hoverEnabled) {
+    handleMouseOver(element, event, d, vis) {
 
-            // highlight hovered element
-            d3.select(element)
-                .attr('stroke-width', '3px')
-                .attr('stroke', '#1e1f22');
+        // TODO: make the element vibrate
 
-            // draw radar chart on tooltip
-            vis.drawRadarChart(d, vis);
+        // TODO: play sample track
 
-            // display tooltip
-            vis.tooltip
-                .style("opacity", 1)
-                .style("left", function() {
-                    if (event.pageX < (vis.width + vis.margin.left + vis.margin.right) / 2) { return `${event.pageX + 10}px`; }
-                    else { return `${event.pageX - vis.width/2 - 10}px`; }
-                })
-                .style("top", function() {
-                    if (event.pageY < vis.height / 2.5) { return `${event.pageY}px`; }
-                    else if (event.pageY < vis.height / 1.2) {return `${vis.height/4}px`; }
-                    else {return `${event.pageY - vis.height/2}px`; }
-                });
-        }
-    }
+        // highlight hovered element
+        d3.select(element)
+            .attr('stroke-width', '3px')
+            .attr('stroke', '#1e1f22');
 
-    handleCircleMouseOut(element, event, d, vis) {
+        // update tooltip label
+        d3.select("#genre-tooltip-small-name-container")
+            .text(d.genre.charAt(0).toUpperCase() + d.genre.substr(1)); // upper case first letter
 
-        if (vis.hoverEnabled) {
-            // revert element highlight
-            d3.select(element).attr('stroke-width', '0px');
-            // hide tooltip
-            vis.tooltip.style("opacity", 0);
-        }
-    }
+        // TODO: update genre description
 
-    handleCircleMouseClick(element, event, d, vis) {
+        // get circle location
+        let cx = parseFloat(d3.select(element).attr('cx')) + vis.margin.left,
+            cy = parseFloat(d3.select(element).attr('cy')) + vis.margin.top;
 
-        if (vis.hoverEnabled) {
-            // highlight clicked element
-            d3.select(element)
-                .attr('stroke-width', '3px')
-                .attr('stroke', '#c67ca2');
+        // get tooltip height
+        vis.tooltipHeight = document.getElementById("genre-tooltip-small-container").offsetHeight;
 
-            console.log(element);
-
-            // disable hover responses
-            vis.hoverEnabled = false;
-
-            // draw radar chart on tooltip
-            vis.drawRadarChart(d, vis);
-
-            // display tooltip
-            vis.tooltip
-                .style("opacity", 1)
-                .style("left", function() {
-                    if (event.pageX < (vis.width + vis.margin.left + vis.margin.right) / 2) { return `${event.pageX + 10}px`; }
-                    else { return `${event.pageX - vis.width/2 - 10}px`; }
-                })
-                .style("top", function() {
-                    if (event.pageY < vis.height / 2.5) { return `${event.pageY}px`; }
-                    else if (event.pageY < vis.height / 1.2) {return `${vis.height/4}px`; }
-                    else {return `${event.pageY - vis.height/2}px`; }
-                });
-
-        } else {
-            // enable hover responses
-            vis.hoverEnabled = true;
-            // revert element highlight and tooltip
-            vis.handleCircleMouseOut(element, event, d, vis);
-            vis.updateVis();
-        }
-    }
-
-    handleMainMouseClick(element, event, d, vis) {
-        if (!vis.hoverEnabled) {
-            // enable hover responses
-            vis.hoverEnabled = true;
-            vis.tooltip.style("opacity", 0);
-            vis.updateVis();
-        }
-    }
-
-    handleTooltipMouseOver(element, event, d, vis) {
+        // display tooltip
+        vis.tooltipSmall
+            .style("opacity", 1)
+            .style("left", function() {
+                if (cx <= vis.width/2) { return `${cx + vis.hSpacing / 2 + 3 * vis.radius}px`; }
+                else { return `${cx + vis.hSpacing / 2 - vis.tooltipWidth}px` }
+            })
+            .style("top", `${cy - vis.tooltipHeight/2}px`);
 
     }
 
-    handleTooltipMouseOut(element, event, d, vis) {
+    handleMouseOut(element, event, d, vis) {
+
+        // TODO: make the element stop vibrate
+
+        // TODO: stop sample track
+
+        // revert element highlight
+        d3.select(element)
+            .attr('stroke-width', '0px');
+
+        // hide tooltip
+        vis.tooltipSmall
+            .style("opacity", 0)
+            .style("left", `-1080px`);
 
     }
 
-    handleTooltipMouseClick(event, d) {
+
+    handleMouseClick(element, event, d, vis) {
+
+        // update radar chart
+        vis.radarVis.data = d;
+        vis.radarVis.updateVis();
+
+        // update tooltip label
+        d3.select("#genre-tooltip-large-name-container")
+            .text(d.genre.charAt(0).toUpperCase() + d.genre.substr(1)); // upper case first letter
+
+        // TODO: update genre description
+
+        // display tooltip
+        vis.tooltipLarge
+            .style("opacity", 1)
+            .style("left", `${vis.margin.left  + vis.height * 0.15}px`)
+            .style("top", `${vis.margin.top + vis.height * 0.15}px`);
 
     }
 
-    drawRadarChart(data, vis) {
 
-        // draw the path element
-        vis.tooltip.paths = vis.tooltip.pathGroup
-            .selectAll("path")
-            .data([data]);
+    handleMouseClickOnExit(event, vis) {
 
-        vis.tooltip.paths
-            .enter()
-            .append("path")
-            .merge(vis.tooltip.paths)
-            .datum(d => vis.getPathCoordinates(d, vis))
-            .attr("d", vis.tooltip.line)
-            .attr("stroke-width", 1)
-            .attr("stroke", "gray")
-            .attr("fill", "#74729a")
-            .attr("stroke-opacity", 1)
-            .attr("opacity", 0.75);
-    }
-
-    angleToCoordinate(angle, value, vis){
-        let x = Math.cos(angle) * vis.tooltip.scale(value);
-        let y = Math.sin(angle) * vis.tooltip.scale(value);
-        return {
-            "x": vis.tooltip.svgWidth / 2 - vis.tooltip.margin.left + x,
-            "y": vis.tooltip.svgHeight / 2 - vis.tooltip.margin.top - y
-        };
-    }
-
-    getPathCoordinates(data, vis) {
-        console.log(data);
-        let coordinates = [];
-        for (var i = 0; i < vis.tooltip.features.length; i++){
-            let ft_name = `${vis.tooltip.features[i]}_scaled`;
-            let angle = (Math.PI / 2) + (2 * Math.PI * i / vis.tooltip.features.length);
-            coordinates.push(vis.angleToCoordinate(angle, data[ft_name], vis));
-        }
-        return coordinates;
+        // hide tooltip
+        vis.tooltipLarge
+            .style("opacity", 0)
+            .style("left", `-1080px`);
     }
 
 }
