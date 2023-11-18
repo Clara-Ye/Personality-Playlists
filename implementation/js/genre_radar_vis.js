@@ -66,12 +66,13 @@ class RadarVis {
             .attr("stroke","black");
 
         // draw axis labels
-        vis.labels = vis.svg.selectAll(".axislabel")
+        vis.labels = vis.svg.selectAll(".radarLabel")
             .data(vis.featureData);
         vis.labels
             .enter()
             .append("text")
             .merge(vis.labels)
+            .attr('class', "radarLabel")
             .attr("x", d => d.label_coord.x)
             .attr("y", d => d.label_coord.y + 5)
             .attr("text-anchor", function(d) {
@@ -81,6 +82,9 @@ class RadarVis {
             })
             .text(d => d.name);
         vis.labels.exit().remove();
+        vis.labels = vis.svg.selectAll(".radarLabel")
+            .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, vis); } )
+            .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, vis); } );
 
         // initialize helpers for paths
         vis.line = d3.line()
@@ -88,6 +92,27 @@ class RadarVis {
             .y(d => d.y);
         vis.pathGroup = vis.svg.append("g")
             .attr("class", "radar-path");
+
+        // add tooltip container
+        vis.radarTooltip = d3.select("body")
+            .append('div')
+            .attr('class', "tooltip")
+            .attr('id', 'radar-tooltip')
+            .html(`
+                <div class="row" id="radar-tooltip-container">
+                    <div class="col-12">
+                        <!-- genre name -->
+                        <div id="radar-tooltip-feat-container">Feature Name: Feature value</div>
+                        <!-- description -->
+                        <div id="radar-tooltip-desc-container">
+                            This is a beautiful and concise description of what this acoustic feature is measuring.
+                        </div>
+                    </div>
+                </div>`);
+        // set attributes
+        vis.radarTooltip.style('opacity', 0);
+        vis.tooltipWidth = d3.max([vis.width*0.5, 275]);
+        document.getElementById("radar-tooltip-container").style.width = `${vis.tooltipWidth}px`;
 
         vis.updateVis();
     }
@@ -114,13 +139,34 @@ class RadarVis {
     }
 
 
-    handleMouseOver(element, event, d, vis) {
+    handleMouseOver(element, event, vis) {
+
+        // update tooltip label
+        let feature = d3.select(element).text();
+        d3.select("#radar-tooltip-feat-container")
+            .text(`${feature}: ${vis.data[feature].toPrecision(3)}`); // upper case first letter
+
+        // TODO: update genre description
+
+        // get text location
+        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
+            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top;
+
+        // display tooltip
+        vis.radarTooltip
+            .style("opacity", 1)
+            .style("left", `${x}px`)
+            .style("top", `${y}px`);
 
     }
 
 
-    handleMouseOut(element, event, d, vis) {
+    handleMouseOut(element, event, vis) {
 
+        // hide tooltip
+        vis.radarTooltip
+            .style("opacity", 0)
+            .style("left", `-1080px`);
     }
 
 

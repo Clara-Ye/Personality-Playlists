@@ -94,8 +94,11 @@ class GenreVis {
 
         // set attributes
         vis.tooltipLarge.style('opacity', 0);
-        document.getElementById("genre-tooltip-large-container").style.width = `${vis.width}px`;
-        document.getElementById("genre-tooltip-large-container").style.height = `${vis.height * 0.7}px`;
+        document.getElementById("genre-tooltip-large-container").style.width = `${4*vis.hSpacing + 10*vis.radius + vis.margin.left}px`;
+        document.getElementById("genre-tooltip-large-container").style.height = `${2*vis.hSpacing + 6*vis.radius + vis.margin.top}px`;
+
+        vis.tooltipLeft = document.getElementById(vis.parentElement).getBoundingClientRect().left + vis.margin.left;
+        vis.tooltipTop = document.getElementById(vis.parentElement).getBoundingClientRect().top + vis.height/2 - vis.radius*3 - vis.hSpacing;
 
         // create radar chart instance
         vis.radarVis = new RadarVis("radar-vis", vis.genreData[0]);
@@ -211,9 +214,9 @@ class GenreVis {
 
         // display tooltip
         vis.tooltipLarge
-            .style("opacity", 1)
-            .style("left", `${vis.margin.left  + vis.height * 0.15}px`)
-            .style("top", `${vis.margin.top + vis.height * 0.15}px`);
+            .style("opacity", 0.8)
+            .style("left", `${vis.tooltipLeft}px`)
+            .style("top", `${vis.tooltipTop}px`);
 
     }
 
@@ -225,6 +228,7 @@ class GenreVis {
             .style("opacity", 0)
             .style("left", `-1080px`);
     }
+
 
     highlightAndShakeIcon(element, vis, bpm, loudness) {
 
@@ -252,6 +256,7 @@ class GenreVis {
 
     }
 
+
     shakeIcon(element, vis, frequency, amplitude) {
 
         d3.select(element)
@@ -265,6 +270,7 @@ class GenreVis {
             .on("end", function() { vis.shakeIcon(element, vis, frequency, amplitude); } );
 
     }
+
 
     resetIcon(element, vis, bpm) {
 

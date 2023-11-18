@@ -16,8 +16,16 @@
     padding: 20px;
 }
 
+#radar-tooltip-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: white;
+    padding: 20px;
+}
+
 #genre-tooltip-small-name-container,
-#genre-tooltip-large-name-container {
+#genre-tooltip-large-name-container,
+#radar-tooltip-feat-container {
     font-size: larger;
     font-weight: bolder;
 }
@@ -31,4 +39,8 @@
 
 #genre-tooltip-large .exit-button:hover {
     opacity: 0.7;
+}
+
+.radarLabel:hover {
+    cursor: default;
 }
