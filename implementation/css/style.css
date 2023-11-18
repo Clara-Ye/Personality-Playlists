@@ -1,3 +1,7 @@
+.genre-icon:hover {
+    cursor: pointer;
+}
+
 #genre-tooltip-small-container {
     border: thin solid grey;
     border-radius: 5px;

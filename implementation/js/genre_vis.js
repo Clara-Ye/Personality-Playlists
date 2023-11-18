@@ -153,15 +153,10 @@ class GenreVis {
 
     handleMouseOver(element, event, d, vis) {
 
-        // make the element vibrate
-        vis.shakeIcon(element, vis, d.tempo, d.loudness_scaled);
+        // highlight and shake icon
+        vis.highlightAndShakeIcon(element, vis, d.tempo, d.loudness_scaled);
 
         // TODO: play sample track
-
-        // highlight hovered element
-        d3.select(element)
-            .attr('stroke-width', '3px')
-            .attr('stroke', '#1e1f22');
 
         // update tooltip label
         d3.select("#genre-tooltip-small-name-container")
@@ -190,13 +185,9 @@ class GenreVis {
     handleMouseOut(element, event, d, vis) {
 
         // make the element stop vibrate
-        vis.stopIcon(element, vis, d.tempo);
+        vis.resetIcon(element, vis, d.tempo);
 
         // TODO: stop sample track
-
-        // revert element highlight
-        d3.select(element)
-            .attr('stroke-width', '0px');
 
         // hide tooltip
         vis.tooltipSmall
@@ -235,13 +226,34 @@ class GenreVis {
             .style("left", `-1080px`);
     }
 
-    shakeIcon(element, vis, bpm, loudness) {
+    highlightAndShakeIcon(element, vis, bpm, loudness) {
 
         // get animation attributes
         let frequency = bpm / 60;
         let amplitude = loudness**2 * 20;
 
         // vibrate
+        d3.select(element)
+            // vibrate down
+            .transition()
+            .duration(1000 / frequency)
+            .attr("transform", "translate(0," + amplitude + ")")
+            // highlight element
+            .attr('stroke-width', '3px')
+            .attr('stroke', '#1e1f22')
+            .attr('fill', '#9d9bc2')
+            .attr("r", d3.min([vis.radius * 1.1, vis.radius+10]))
+            // vibrate up
+            .transition()
+            .duration(1000 / frequency)
+            .attr("transform", "translate(0," + -amplitude + ")")
+            // subsequent moves without highlighting
+            .on("end", function() { vis.shakeIcon(element, vis, frequency, amplitude); } );
+
+    }
+
+    shakeIcon(element, vis, frequency, amplitude) {
+
         d3.select(element)
             .transition()
             .duration(1000 / frequency)
@@ -250,16 +262,19 @@ class GenreVis {
             .duration(1000 / frequency)
             .attr("transform", "translate(0," + -amplitude + ")")
             // keep vibrating
-            .on("end", function() { vis.shakeIcon(element, vis, bpm, loudness); } );
+            .on("end", function() { vis.shakeIcon(element, vis, frequency, amplitude); } );
 
     }
 
-    stopIcon(element, vis, bpm) {
+    resetIcon(element, vis, bpm) {
 
         d3.select(element)
             .transition()
             .duration(1000 / (bpm / 60))
-            .attr("transform", "translate(0,0)");
+            .attr("transform", "translate(0,0)")
+            .attr('stroke-width', '0px')
+            .attr('fill', '#74729a')
+            .attr("r", vis.radius);
 
     }
 
