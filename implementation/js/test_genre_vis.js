@@ -1,9 +1,10 @@
 
 class TestGenreVis {
-    constructor(_parentElement, _genreData, _mbtiData) {
+    constructor(_parentElement, _genreData, _mbtiData, _selectedMbti) {
         this.parentElement = _parentElement;
         this.mbtiData = _mbtiData;
         this.genreData = _genreData;
+        this.selectedMbti = _selectedMbti;
 
         this.initVis();
     }
@@ -23,6 +24,8 @@ class TestGenreVis {
             .attr("height", vis.height)
             .append("g")
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
+
+        vis.svg.append("text").text(vis.selectedMbti[0]);
 
         // TODO: add center line
 
