@@ -126,27 +126,26 @@ class GenreVis {
         let vis = this;
 
         // draw genre icons
-        // TODO: switch to svg icons placeholders
-        vis.genreIcon = vis.genreIcons.selectAll("circle")
+        vis.genreIcon = vis.genreIcons.selectAll("image")
             .data(vis.displayData);
         vis.genreIcon.enter()
-            .append("circle")
+            .append("image")
             .merge(vis.genreIcon)
-            .attr("cx", function(d,i) {
-                if (i < 4 || i >= 9) { return vis.hSpacing / 2 + 2 * vis.radius + (i % 4) * (2 * vis.radius + vis.hSpacing); }
-                else { return (i % 5) * (2 * vis.radius + vis.hSpacing) + vis.radius; }
+            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.svg`)
+            .attr("x", function(d,i) {
+                if (i < 4 || i >= 9) { return vis.hSpacing / 2 + vis.radius + (i % 4) * (2 * vis.radius + vis.hSpacing); }
+                else { return (i % 5) * (2 * vis.radius + vis.hSpacing); }
             })
-            .attr("cy", function(d,i) {
-                if (i < 4) { return 2 * vis.vSpacing + vis.radius; }
-                else if (i < 9) { return 3 * vis.vSpacing + 3 * vis.radius; }
-                else { return 4 * vis.vSpacing + 5 * vis.radius; }
+            .attr("y", function(d,i) {
+                if (i < 4) { return 2 * vis.vSpacing; }
+                else if (i < 9) { return 3 * vis.vSpacing + 2 * vis.radius; }
+                else { return 4 * vis.vSpacing + 4 * vis.radius; }
             })
-            .attr("r", vis.radius)
-            .attr("fill", "#74729a")
-            .attr('stroke-width', '0px');
+            .attr("width", 2 * vis.radius)
+            .attr("height", 2 * vis.radius);
 
         // add event listeners
-        vis.genreIcons.selectAll("circle")
+        vis.genreIcons.selectAll("image")
             .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
             .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, d, vis); } )
             .on('click', function(event, d) { vis.handleMouseClick(this, event, d, vis); } );
@@ -168,8 +167,8 @@ class GenreVis {
         // TODO: update genre description
 
         // get circle location
-        let cx = parseFloat(d3.select(element).attr('cx')) + vis.margin.left,
-            cy = parseFloat(d3.select(element).attr('cy')) + vis.margin.top;
+        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left + vis.radius,
+            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top + vis.radius;
 
         // get tooltip height
         vis.tooltipHeight = document.getElementById("genre-tooltip-small-container").offsetHeight;
@@ -178,10 +177,10 @@ class GenreVis {
         vis.tooltipSmall
             .style("opacity", 1)
             .style("left", function() {
-                if (cx <= vis.width/2) { return `${cx + vis.hSpacing / 2 + 3 * vis.radius}px`; }
-                else { return `${cx + vis.hSpacing / 2 - vis.tooltipWidth}px` }
+                if (x <= vis.width/2) { return `${x + 3 * vis.radius}px`; }
+                else { return `${x + vis.hSpacing / 2 - vis.tooltipWidth}px` }
             })
-            .style("top", `${cy - vis.tooltipHeight/2}px`);
+            .style("top", `${y - vis.tooltipHeight/2}px`);
 
     }
 
@@ -236,6 +235,13 @@ class GenreVis {
         let frequency = bpm / 60;
         let amplitude = loudness**2 * 20;
 
+        // get icon location
+        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
+            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top;
+
+        console.log(x);
+        console.log(x - vis.radius * 2 * 0.1)
+
         // vibrate
         d3.select(element)
             // vibrate down
@@ -243,10 +249,7 @@ class GenreVis {
             .duration(1000 / frequency)
             .attr("transform", "translate(0," + amplitude + ")")
             // highlight element
-            .attr('stroke-width', '3px')
-            .attr('stroke', '#1e1f22')
-            .attr('fill', '#9d9bc2')
-            .attr("r", d3.min([vis.radius * 1.1, vis.radius+10]))
+            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}_highlight.svg`)
             // vibrate up
             .transition()
             .duration(1000 / frequency)
@@ -274,13 +277,15 @@ class GenreVis {
 
     resetIcon(element, vis, bpm) {
 
+        // get icon location
+        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
+            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top;
+
         d3.select(element)
             .transition()
             .duration(1000 / (bpm / 60))
             .attr("transform", "translate(0,0)")
-            .attr('stroke-width', '0px')
-            .attr('fill', '#74729a')
-            .attr("r", vis.radius);
+            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.svg`);
 
     }
 
