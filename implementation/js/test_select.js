@@ -5,6 +5,17 @@ class TestSelection {
         this.mbtiData = _mbtiData;
         this.genreData = _genreData;
 
+        this.genreList = [];
+        this.genreData.forEach(d => this.genreList.push(d.genre));
+        this.genreList.sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        this.mbtiList = ["INTJ", "INTP", "ENTJ", "ENTP",
+                         "INFJ", "INFP", "ENFJ", "ENFP",
+                         "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+                         "ISTP", "ISFP", "ESTP", "ESFP"]
+
+        // TODO: group MBTI data by MBTI
+        this.displayData = this.mbtiData;
+
         this.initVis();
     }
 
@@ -16,27 +27,80 @@ class TestSelection {
         vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
-        // init drawing area
-        vis.svg = d3.select(`#${vis.parentElement}`)
-            .append("svg")
-            .attr("width", vis.width)
-            .attr("height", vis.height)
+        // set up page structure
+
+        d3.select(`#${vis.parentElement}`)
+            .append('div')
+            .attr("class", "row")
+            .attr("id", "instruction-row")
+            .html(`<div class="col-12" id="test-main-instruction">
+                        <div>This is a very informative instruction.</div>
+                   </div>`);
+
+        vis.testRow = d3.select(`#${vis.parentElement}`)
+            .append('div')
+            .attr("class", "row")
+            .attr('id', 'test-row');
+
+        vis.buttonRow = d3.select(`#${vis.parentElement}`)
+            .append('div')
+            .attr("class", "row")
+            .attr("id", "button-row");
+
+        vis.genreTestCol = vis.testRow.append("div")
+            .attr("class", "col-6")
+            .attr("id", "genre-test-col");
+
+        vis.mbtiTestCol = vis.testRow.append("div")
+            .attr("class", "col-6")
+            .attr("id", "mbti-test-col");
+
+        // add instructions
+
+        vis.genreInstruction = vis.genreTestCol.append("div")
+            .attr("id", "genre-instruction")
+            .html(`<div>This is a very informative instruction.</div>`);
+
+        vis.genreIcon = vis.genreTestCol.append("img")
+            .attr("src", "img/random/music_icon.svg")
+            .style("width", "50%");
+
+        vis.mbtiInstruction = vis.mbtiTestCol.append("div")
+            .attr("id", "genre-instruction")
+            .html(`<div>This is a very informative instruction.</div>`);
+
+        vis.mbtiIcon = vis.mbtiTestCol.append("img")
+            .attr("src", "img/random/mbti_icon.svg")
+            .style("width", "50%");
+
+        // add selection buttons
+
+        vis.genreButtonGroup = vis.genreTestCol
+            .append("div")
+            .attr("id", "genre-button-container")
+            .style("width", "50%")
             .append("g")
-            .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
+            .attr("class", "button genre-button");
 
-        // TODO: add genre instructions
+        vis.mbtiButtonGroup = vis.mbtiTestCol
+            .append("div")
+            .attr("id", "genre-button-container")
+            .style("width", "50%")
+            .append("g")
+            .attr("class", "button mbti-button");
 
-        // TODO: add genre buttons
+        // add confirm button
 
-        // TODO: add mbti instructions
+        vis.confirmButton = vis.buttonRow.append("button")
+            .text("Confirm")
+            .attr("class", "button")
+            .attr("id", "confirm-button")
+            .on("click", function(event) { vis.handleMouseClickOnConfirm(event, vis) });
 
-        // TODO: add mbti buttons
-
-        // TODO: add comfirm button
 
         // initialize selected items
         vis.selectedGenres = [];
-        vis.selectedMBTI = [];
+        vis.selectedMbti = [];
 
         vis.wrangleData();
     }
@@ -45,8 +109,9 @@ class TestSelection {
     wrangleData() {
         let vis = this;
 
-        // TODO: group MBTI data by MBTI
-        vis.displayData = vis.mbtiData;
+        // TODO: move selected items to front
+        vis.displayGenreList = vis.genreList;
+        vis.displayMbtiList = vis.mbtiList;
 
         vis.updateVis();
     }
@@ -55,10 +120,27 @@ class TestSelection {
     updateVis() {
         let vis = this;
 
-        // TODO: put buttons of selected items to front
+        console.log(vis.displayGenreList)
 
+        // add genre selection buttons
+        vis.genreButtons = vis.genreButtonGroup.selectAll(".genre-button")
+            .data(vis.displayGenreList);
+        vis.genreButtons.enter()
+            .append("button")
+            .attr("class", "genre-button")
+            .merge(vis.genreButtons)
+            .text(d => d);
 
+        // add mbti selection buttons
+        vis.mbtiButtons = vis.mbtiButtonGroup.selectAll(".mbti-button")
+            .data(vis.displayMbtiList);
+        vis.mbtiButtons.enter()
+            .append("button")
+            .attr("class", "genre-button")
+            .merge(vis.mbtiButtons)
+            .text(d => d);
     }
+
 
     handleMouseClickOnConfirm(event, vis) {
 
@@ -67,8 +149,10 @@ class TestSelection {
         if (vis.selectedGenres.length > 0 && vis.selectedGenres.length <= 3) {
             testVis = new TestMBTIVis("test_vis", vis.displayData, vis.genreData);
         // selected MBTI, display genre rankings
-        } else if (vis.selectedMBTI.length == 1) {
+        } else if (vis.selectedMbti.length == 1) {
             testVis = new TestGenreVis("test_vis", vis.displayData, vis.genreData)
+        } else {
+            console.log("error in selection");
         }
     }
 }
