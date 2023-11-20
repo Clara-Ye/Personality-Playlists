@@ -221,8 +221,7 @@ class TestSelection {
             }
 
             // scroll to result visualization
-            window.scrollTo({
-                top: vis.height + vis.margin.top + vis.margin.bottom,
+            document.getElementById("test_vis").scrollIntoView({
                 behavior: 'smooth'
             });
 
