@@ -93,7 +93,9 @@ class GenreVis {
                 </div>`);
 
         // set attributes
-        vis.tooltipLarge.style('opacity', 0);
+        vis.tooltipLarge
+            .style('opacity', 0)
+            .style("left", `-1080px`);
         document.getElementById("genre-tooltip-large-container").style.width = `${4*vis.hSpacing + 10*vis.radius + vis.margin.left}px`;
         document.getElementById("genre-tooltip-large-container").style.height = `${2*vis.hSpacing + 6*vis.radius + vis.margin.top}px`;
 
@@ -213,7 +215,7 @@ class GenreVis {
 
         // display tooltip
         vis.tooltipLarge
-            .style("opacity", 0.8)
+            .style("opacity", 1)
             .style("left", `${vis.tooltipLeft}px`)
             .style("top", `${vis.tooltipTop}px`);
 
