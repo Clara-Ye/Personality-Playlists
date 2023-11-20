@@ -169,8 +169,8 @@ class GenreVis {
         // TODO: update genre description
 
         // get circle location
-        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left + vis.radius,
-            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top + vis.radius;
+        let x = parseFloat(d3.select(element).attr('x')) + window.pageXOffset + vis.margin.left + vis.radius,
+            y = parseFloat(d3.select(element).attr('y')) + window.pageYOffset + vis.margin.top + vis.radius;
 
         // get tooltip height
         vis.tooltipHeight = document.getElementById("genre-tooltip-small-container").offsetHeight;
@@ -237,13 +237,6 @@ class GenreVis {
         let frequency = bpm / 60;
         let amplitude = loudness**2 * 20;
 
-        // get icon location
-        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
-            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top;
-
-        console.log(x);
-        console.log(x - vis.radius * 2 * 0.1)
-
         // vibrate
         d3.select(element)
             // vibrate down
@@ -278,10 +271,6 @@ class GenreVis {
 
 
     resetIcon(element, vis, bpm) {
-
-        // get icon location
-        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
-            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top;
 
         d3.select(element)
             .transition()

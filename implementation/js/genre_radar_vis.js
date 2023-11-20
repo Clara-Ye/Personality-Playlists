@@ -149,14 +149,14 @@ class RadarVis {
         // TODO: update genre description
 
         // get text location
-        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
-            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top;
+        let x = parseFloat(d3.select(element).attr('x')) + window.pageXOffset + vis.margin.left,
+            y = parseFloat(d3.select(element).attr('y')) + window.pageYOffset + vis.margin.top;
 
         // display tooltip
         vis.radarTooltip
             .style("opacity", 1)
             .style("left", `${x}px`)
-            .style("top", `${y}px`);
+            .style("top", `${y + vis.height/5}px`);
 
     }
 
