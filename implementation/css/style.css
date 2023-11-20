@@ -20,6 +20,46 @@ body, html {
 	padding: 50px 0; /* Example padding */
 }
 
+/* genre vis*/
+.genre-icon:hover {
+    cursor: pointer;
+}
+
+#genre-tooltip-small-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
+    padding: 20px;
+}
+
+#genre-tooltip-large-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
+    padding: 20px;
+}
+
+#radar-tooltip-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: white;
+    padding: 20px;
+}
+
+#genre-tooltip-small-name-container,
+#genre-tooltip-large-name-container,
+#radar-tooltip-feat-container {
+    font-size: larger;
+    font-weight: bolder;
+}
+
+#genre-tooltip-large .exit-button {
+    font-size: 20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
 /*MBTI ALL*/
 .mbti-tooltip {
 	display: none;
@@ -35,12 +75,6 @@ body, html {
 	width: 100px;
 	height: 100px;
 }
-
-
-
-
-
-
 
 /*MBTI DETAIL*/
 .image-container {
@@ -83,4 +117,12 @@ body, html {
 	width: 48%;
 	margin: 1%;
 	flex: 1 0 21%;
+}
+
+#genre-tooltip-large .exit-button:hover {
+    opacity: 0.7;
+}
+
+.radarLabel:hover {
+    cursor: default;
 }
