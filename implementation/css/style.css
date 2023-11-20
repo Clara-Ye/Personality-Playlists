@@ -36,12 +36,6 @@ body, html {
 	height: 100px;
 }
 
-
-
-
-
-
-
 /*MBTI DETAIL*/
 .image-container {
 	display: flex;
@@ -83,4 +77,16 @@ body, html {
 	width: 48%;
 	margin: 1%;
 	flex: 1 0 21%;
+}
+
+
+
+/*MUSIC MBTI DISTRIBUTION*/
+.select-container {
+	text-align: center;
+}
+
+.music-type-select {
+	padding: 5px;
+	font-size: 1em;
 }
