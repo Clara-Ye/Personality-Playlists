@@ -42,17 +42,38 @@ class TestGenreVis {
 
         // initialize scales
         vis.r = d3.scaleSqrt()
-            .range([20, 100]);
+            .range([20, vis.width/14]);
         vis.colorPositive = d3.scaleSequential()
             .range(["#FFFFFF", "#74729a"]);
         vis.colorNegative = d3.scaleSequential()
             .range(["#FFFFFF", "#666666"]);
 
+
+        vis.centers = {
+            positive: {x: vis.width*0.2, y: vis.height*0.55},
+            neutral: {x: vis.width*0.5, y: vis.height*0.2},
+            negative: {x: vis.width*0.8, y: vis.height*0.55}
+        };
+
         // initialize simulation:
         vis.simulation = d3.forceSimulation()
             .force('charge', d3.forceManyBody().strength(vis.charge))
-            .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
+            //.force("center", d3.forceCenter(nodeCenterX, vis.height / 2))
+            .force('x', d3.forceX().strength(0.03).x(nodeCenterX))
+            .force('y', d3.forceY().strength(0.03).y(nodeCenterY))
             .force('collision', d3.forceCollide().radius(d => d.radius + 1));
+
+        function nodeCenterX(d) {
+            if (d.rating_relative > 0.1) { return vis.centers['positive'].x; }
+            else if (d.rating_relative < -0.1) { return vis.centers['negative'].x; }
+            else { return vis.centers['neutral'].x; }
+        }
+
+        function nodeCenterY(d) {
+            if (d.rating_relative >= 0.1) { return vis.centers['positive'].y; }
+            else if (d.rating_relative <= -0.1) { return vis.centers['negative'].y; }
+            else { return vis.centers['neutral'].y; }
+        }
 
         vis.simulation.stop();
 
@@ -90,7 +111,7 @@ class TestGenreVis {
         vis.nodes = vis.displayData.map(d => ({
             ...d,
             radius: vis.r(Math.abs(d.rating_relative)),
-            x: Math.random() * vis.width,
+            x: vis.width / 2,
             y: Math.random() * vis.height
         }))
 
@@ -116,7 +137,7 @@ class TestGenreVis {
             .attr("text-anchor", "middle")
             .style("fill", "black")
             .attr("dy", "0.35em")
-            .text(d => `${d.genre}: ${Number.isFinite(d.rating) ? d.rating.toFixed(2) : "N/A"}`);
+            .text(d => `${d.genre}`);
 
         // Restart the simulation with each update
         vis.simulation.nodes(vis.nodes)
@@ -136,7 +157,7 @@ class TestGenreVis {
     }
 
     charge(d) {
-        return Math.pow(d.radius, 2.0) * 0.1;
+        return Math.pow(d.radius, 2.0) * 0.01
     }
 
     // TODO: display tooltip on hover
