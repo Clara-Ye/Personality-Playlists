@@ -1,11 +1,12 @@
 
 class GenreVis {
 
-    constructor(_parentElement, _genreData, _artistData, _songData) {
+    constructor(_parentElement, _genreData, _artistData, _songData, _acousticsData) {
         this.parentElement = _parentElement;
         this.genreData = _genreData;
         this.artistData = _artistData;
         this.songData = _songData;
+        this.acousticsData = _acousticsData;
 
         this.initVis();
     }
@@ -84,6 +85,7 @@ class GenreVis {
                             </div>
                             <!-- description -->
                             <div class="col-5">
+                                <div id="genre-tooltip-large-figure-container"></div>
                                 <div id="genre-tooltip-large-intro-container">
                                     Ah, the enchanting world of music genres – where the beats are as diverse as my excuses for not doing thorough research. Today, we embark on a sonic journey through a genre that's so mysterious, even I couldn't bother finding out what it is. Picture this as the placeholder for your soon-to-be-discovered musical passion. It's like the suspense of a blind date, but with fewer awkward conversations and more notes playing hard to get. 
                                 </div>
@@ -103,11 +105,17 @@ class GenreVis {
         vis.tooltipTop = document.getElementById(vis.parentElement).getBoundingClientRect().top + vis.height/2 - vis.radius*3 - vis.hSpacing;
 
         // create radar chart instance
-        vis.radarVis = new RadarVis("radar-vis", vis.genreData[0]);
+        vis.radarVis = new RadarVis("radar-vis", vis.genreData[0], vis.acousticsData);
 
         // register exit icon to event listener
         document.getElementById("genre-tooltip-large-exit-button")
             .addEventListener("click", function(event) { vis.handleMouseClickOnExit(event, vis); } );
+
+        // add genre figure to tooltip
+        vis.tooltipFigure = d3.select("#genre-tooltip-large-figure-container")
+            .append("img")
+            .attr("class", "img-fluid")
+            .style("width", "60%");
 
         vis.wrangleData();
     }
@@ -166,7 +174,9 @@ class GenreVis {
         d3.select("#genre-tooltip-small-name-container")
             .text(d.genre.charAt(0).toUpperCase() + d.genre.substr(1)); // upper case first letter
 
-        // TODO: update genre description
+        // update genre description
+        d3.select("#genre-tooltip-small-intro-container")
+            .text(d.desc_short);
 
         // get circle location
         let x = parseFloat(d3.select(element).attr('x')) + window.pageXOffset + vis.margin.left + vis.radius,
@@ -211,7 +221,11 @@ class GenreVis {
         d3.select("#genre-tooltip-large-name-container")
             .text(d.genre.charAt(0).toUpperCase() + d.genre.substr(1)); // upper case first letter
 
-        // TODO: update genre description
+        d3.select("#genre-tooltip-large-intro-container")
+            .text(d.desc_long);
+
+        // update tooltip figure
+        vis.tooltipFigure.attr("src", `img/genre_figures/${d.genre}.png`)
 
         // display tooltip
         vis.tooltipLarge

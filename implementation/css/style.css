@@ -119,6 +119,14 @@ body, html {
 	flex: 1 0 21%;
 }
 
+
+/*MUSIC GENRE INTRO*/
+#genre-tooltip-large-figure-container {
+	margin: 10px;
+	display: flex;
+	justify-content: center;
+}
+
 #genre-tooltip-large .exit-button:hover {
     opacity: 0.7;
 }
