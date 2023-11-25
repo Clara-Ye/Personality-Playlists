@@ -25,7 +25,19 @@ class TestGenreVis {
             .append("g")
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
 
-        vis.svg.append("text").text(vis.selectedMbti[0]);
+        vis.svg.append("text")
+            .text(`As ${vis.selectedMbti[0]}, you might`)
+            .attr("x", vis.width/2)
+            .attr("y", vis.height * 0.05)
+            .style("text-anchor", "middle");
+        vis.svg.append("text").text("Like:")
+            .attr("x", vis.width/4)
+            .attr("y", vis.height * 0.15)
+            .style("text-anchor", "middle");
+        vis.svg.append("text").text("Dislike:")
+            .attr("x", vis.width/4*3)
+            .attr("y", vis.height * 0.15)
+            .style("text-anchor", "middle");
 
         // add center line
         vis.svg.append("line")
