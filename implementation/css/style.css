@@ -1,200 +1,160 @@
-body, html {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100%;
+/*THIS IS THE CSS FOR LANDING PAGE*/
+/*Load Fonts*/
+@font-face {
+    font-family: 'RockSlayers';
+    src: url('font/RockSlayers-BW6Lw.otf') format('truetype');
 }
 
-.full-screen-vis {
-	width: 100%;
-	height: 100vh; /* 100% of the viewport height */
-	display: flex;
-	justify-content: center;
-	align-items: center;
+@font-face {
+    font-family: 'DoodleFont';
+    src: url('font/Doodle.ttf') format('truetype');
 }
 
-.scrollable-vis {
-	width: 100%;
-	/* Adjust the height as needed, or make it responsive to content */
-	min-height: 100vh;
-	padding: 50px 0; /* Example padding */
+@font-face {
+    font-family: 'ChalkBoy';
+    src: url('font/ChalkboyRegular-vmXe7.otf') format('truetype');
 }
 
-/* genre vis*/
-.genre-icon:hover {
+/*Landing page Animation*/
+body{
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    background-color:#393A4C;
+    overflow:hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-wrapper{
+    text-align: center;
+    position: relative;
+    font-size: 4vw;
+    line-height: 7vw;
+}
+
+.capital-letter {
+    font-size: 200%;
+}
+
+span{
+    position: relative;
+    display: inline-block;
+    color: #fff4d6;
+    font-family: 'RockSlayers', sans-serif;
+    font-weight: 900;
+    letter-spacing: 1vw;
+    transform-origin: center;
+    animation: waveAnim 2s infinite;
+    animation-delay: calc(0.2s * var(--i));"
+}
+
+@keyframes waveAnim {
+    0%, 40%,100%{
+        transform: translateY(0);
+    }
+    20%{
+        transform: translateY(-70px);
+    }
+}
+
+/*Navigate Button*/
+.navigate-button {
+    text-align: center;
+    margin-top: 0px;
+}
+
+.button-click {
+    font-family: "RockSlayers", sans-serif;
+    font-size: 2vw;
+    letter-spacing: 0.1vw;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #000;
     cursor: pointer;
+    border: 10px solid;
+    padding: 0.25em 0.5em;
+    box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 20px 20px 0px 0px, 4px 4px 0px 0px, 5px 5px 0px 0px;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
-#genre-tooltip-small-container {
-    border: thin solid grey;
-    border-radius: 5px;
-    background: lightgrey;
-    padding: 20px;
+.button-click:active {
+    box-shadow: 0px 0px 0px 0px;
+    top: 5px;
+    left: 5px;
 }
 
-#genre-tooltip-large-container {
-    border: thin solid grey;
-    border-radius: 5px;
-    background: lightgrey;
-    padding: 20px;
+@media (min-width: 768px) {
+    .button-click {
+        padding: 0.25em 0.75em;
+    }
 }
 
-#radar-tooltip-container {
-    border: thin solid grey;
-    border-radius: 5px;
-    background: white;
-    padding: 20px;
+/*Star Animation*/
+@keyframes star {
+    to {
+        zoom:10%;
+        opacity:0;
+    }
+    from{
+        zoom:100%;
+        opacity:1;
+    }
+}
+.star {
+    animation-name: star;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-duration: 2s;
+    animation-direction: alternate;
+
+}
+@keyframes star1 {
+    to {
+
+        opacity:0;
+    }
+    from{
+
+        opacity:1;
+    }
+}
+.star1 {
+    animation-name: star1;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-duration: 3s;
+    animation-direction: alternate;
+}
+@keyframes star2 {
+    0% {
+        opacity:1;
+    }
+    45% {
+        opacity:1;
+    }
+    55% {
+        opacity:0;
+    }
+    100% {
+        opacity:0;
+    }
+
+}
+.star2 {
+    animation-name: star2;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-duration: 5s;
+    animation-direction: alternate;
 }
 
-#genre-tooltip-small-name-container,
-#genre-tooltip-large-name-container,
-#radar-tooltip-feat-container {
-    font-size: larger;
-    font-weight: bolder;
-}
-
-#genre-tooltip-large .exit-button {
-    font-size: 20px;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
-/*MBTI ALL*/
-.mbti-tooltip {
-	display: none;
-	position: absolute;
-	background-color: white;
-	border: 1px solid #ccc;
-	padding: 10px;
-	z-index: 100;
-}
-
-.mbti-img {
-	position: absolute;
-	width: 100px;
-	height: 100px;
-}
-
-/*MBTI DETAIL*/
-.image-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100%;
-}
-.mbti-letter-button-selected {
-	background-color: #00c4ff;
-	color: white;
-}
-
-.mbti-info {
-	margin-left: 20px; /* Adjust as needed */
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: center; /* This will vertically center the text in the remaining space */
-}
-
-#mbtiDetail {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-}
-
-.button-container {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 10px;
-	width: 50%;
-	padding: 10px;
-}
-
-.mbti-letter-button {
-	padding: 10px;
-	cursor: pointer;
-	width: 48%;
-	margin: 1%;
-	flex: 1 0 21%;
-}
-
-
-/*MUSIC GENRE INTRO*/
-#genre-tooltip-large-figure-container {
-	margin: 10px;
-	display: flex;
-	justify-content: center;
-}
-
-#genre-tooltip-large .exit-button:hover {
-    opacity: 0.7;
-}
-
-.radarLabel:hover {
-    cursor: default;
-}
-
-
-/* TEST SELECTION */
-#test_select{
-	margin-top: 10vh;
-}
-
-#instruction-row,
-#genre-instruction-container,
-#genre-icon-container,
-#genre-button-container,
-#mbti-instruction-container,
-#mbti-icon-container,
-#mbti-button-container {
-	margin-bottom: 30px;
-	display: flex;
-	justify-content: center;
-}
-
-#main-instruction {
-	text-align: center;
-	font-size: xx-large;
-}
-
-#main-instruction-foot {
-	text-align: center;
-}
-
-#genre-instruction,
-#mbti-instruction {
-	text-align: center;
-	font-size: large;
-}
-
-#genre-instruction-foot,
-#mbti-instruction-foot {
-	text-align: center;
-	font-size: small;
-}
-
-#button-row {
-	display: flex;
-	justify-content: center;
-}
-
-.genre-button,
-.mbti-button,
-#confirm-button {
-	margin: 5px;
-	padding-top:3px;
-	padding-bottom: 3px;
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-/*MUSIC MBTI DISTRIBUTION*/
-.select-container {
-	text-align: center;
-}
-
-.music-type-select {
-	padding: 5px;
-	font-size: 1em;
+/*Star Size*/
+:root {
+    --star-width: 800px;
+    --star-height: 800px;
 }
