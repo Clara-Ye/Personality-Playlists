@@ -242,46 +242,111 @@ main{
 }
 
 
+/* genre vis*/
+.genre-icon:hover {
+    cursor: pointer;
+}
+
+#genre-tooltip-small-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
+    padding: 20px;
+}
+
+#genre-tooltip-large-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
+    padding: 20px;
+}
+
+#radar-tooltip-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: white;
+    padding: 20px;
+}
+
+#genre-tooltip-small-name-container,
+#genre-tooltip-large-name-container,
+#radar-tooltip-feat-container {
+    font-size: larger;
+    font-weight: bolder;
+}
+
+#genre-tooltip-large .exit-button {
+    font-size: 20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/*MBTI ALL*/
+.mbti-tooltip {
+	display: none;
+	position: absolute;
+	background-color: white;
+	border: 1px solid #ccc;
+	padding: 10px;
+	z-index: 100;
+}
+
+.mbti-img {
+	position: absolute;
+	width: 100px;
+	height: 100px;
+}
+
 /*MBTI DETAIL*/
 .image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
 }
 .mbti-letter-button-selected {
-    background-color: #00c4ff;
-    color: white;
+	background-color: #00c4ff;
+	color: white;
 }
 
 .mbti-info {
-    margin-left: 20px; /* Adjust as needed */
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* This will vertically center the text in the remaining space */
+	margin-left: 20px; /* Adjust as needed */
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center; /* This will vertically center the text in the remaining space */
 }
 
 #mbtiDetail {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
 }
 
 .button-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    width: 50%;
-    padding: 10px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+	width: 50%;
+	padding: 10px;
 }
 
 .mbti-letter-button {
-    padding: 10px;
-    cursor: pointer;
-    width: 48%;
-    margin: 1%;
-    flex: 1 0 21%;
+	padding: 10px;
+	cursor: pointer;
+	width: 48%;
+	margin: 1%;
+	flex: 1 0 21%;
+}
+
+
+/*MUSIC GENRE INTRO*/
+#genre-tooltip-large-figure-container {
+	margin: 10px;
+	display: flex;
+	justify-content: center;
 }
 
 #genre-tooltip-large .exit-button:hover {
@@ -293,17 +358,69 @@ main{
 }
 
 
+/* TEST SELECTION */
+#genre-instruction-container,
+#genre-icon-container,
+#genre-button-container,
+#mbti-instruction-container,
+#mbti-icon-container,
+#mbti-button-container {
+	margin-bottom: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+#genre-instruction-container,
+#mbti-instruction-container {
+    margin-top: 30px;
+}
+
+#main-instruction {
+	text-align: center;
+	font-size: xx-large;
+}
+
+#main-instruction-foot {
+	text-align: center;
+}
+
+#genre-instruction,
+#mbti-instruction {
+	text-align: center;
+	font-size: large;
+}
+
+#genre-instruction-foot,
+#mbti-instruction-foot {
+	text-align: center;
+	font-size: small;
+}
+
+#button-row {
+	display: flex;
+	justify-content: center;
+}
+
+.genre-button,
+.mbti-button,
+#confirm-button {
+	padding-top:3px;
+	padding-bottom: 3px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.genre-button,
+.mbti-button {
+    margin: 5px;
+}
+
 /*MUSIC MBTI DISTRIBUTION*/
 .select-container {
-    text-align: center;
+	text-align: center;
 }
 
 .music-type-select {
-    padding: 5px;
-    font-size: 1em;
+	padding: 5px;
+	font-size: 1em;
 }
-
-
-
-
-

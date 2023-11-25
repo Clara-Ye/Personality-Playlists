@@ -94,7 +94,7 @@ class RadarVis {
             .attr("class", "radar-path");
 
         // add tooltip container
-        vis.radarTooltip = d3.select("body")
+        vis.radarTooltip = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr('class', "tooltip")
             .attr('id', 'radar-tooltip')
