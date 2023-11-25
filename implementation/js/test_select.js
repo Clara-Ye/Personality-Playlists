@@ -92,15 +92,6 @@ class TestSelection {
 
         // set up page structure
 
-        d3.select(`#${vis.parentElement}`)
-            .append('div')
-            .attr("class", "row")
-            .attr("id", "instruction-row")
-            .html(`<div class="col-12">
-                        <div id="main-instruction">Now let's do a mini test!</div>
-                        <div id="main-instruction-foot">(Don't worry, it's a personality-test test)</div>
-                   </div>`);
-
         vis.testRow = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr("class", "row")
@@ -133,7 +124,7 @@ class TestSelection {
             .attr("id", "genre-icon-container")
             .append("img")
             .attr("src", "img/random/music_icon.svg")
-            .style("width", "50%");
+            .style("width", "45%");
 
         vis.mbtiInstruction = vis.mbtiTestCol.append("div")
             .attr("class", "row")
@@ -147,7 +138,7 @@ class TestSelection {
             .attr("id", "mbti-icon-container")
             .append("img")
             .attr("src", "img/random/mbti_icon.svg")
-            .style("width", "50%");
+            .style("width", "45%");
 
         // add selection buttons
 
@@ -205,7 +196,7 @@ class TestSelection {
             .transition()
             .duration(200)
             .text(d => d)
-            .style("min-width", `${vis.width / 2 * 0.7 / 4 - 10}px`)
+            .style("min-width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
                 if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#74729a"; }
                 else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9d9bc2"; }
@@ -225,7 +216,7 @@ class TestSelection {
             .transition()
             .duration(200)
             .text(d => d)
-            .style("width", `${vis.width / 2 * 0.7 / 4 - 10}px`)
+            .style("width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
                 if (vis.selectedMbti.includes(d)) { return "#74729a"; }
                 else { return "#ffffff" }

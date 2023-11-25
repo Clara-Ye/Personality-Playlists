@@ -359,11 +359,6 @@ main{
 
 
 /* TEST SELECTION */
-#test_select{
-	margin-top: 10vh;
-}
-
-#instruction-row,
 #genre-instruction-container,
 #genre-icon-container,
 #genre-button-container,
@@ -373,6 +368,11 @@ main{
 	margin-bottom: 30px;
 	display: flex;
 	justify-content: center;
+}
+
+#genre-instruction-container,
+#mbti-instruction-container {
+    margin-top: 30px;
 }
 
 #main-instruction {
@@ -404,11 +404,15 @@ main{
 .genre-button,
 .mbti-button,
 #confirm-button {
-	margin: 5px;
 	padding-top:3px;
 	padding-bottom: 3px;
 	padding-left: 10px;
 	padding-right: 10px;
+}
+
+.genre-button,
+.mbti-button {
+    margin: 5px;
 }
 
 /*MUSIC MBTI DISTRIBUTION*/
