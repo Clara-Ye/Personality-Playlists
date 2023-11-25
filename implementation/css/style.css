@@ -136,6 +136,59 @@ body, html {
 }
 
 
+/* TEST SELECTION */
+#test_select{
+	margin-top: 10vh;
+}
+
+#instruction-row,
+#genre-instruction-container,
+#genre-icon-container,
+#genre-button-container,
+#mbti-instruction-container,
+#mbti-icon-container,
+#mbti-button-container {
+	margin-bottom: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+#main-instruction {
+	text-align: center;
+	font-size: xx-large;
+}
+
+#main-instruction-foot {
+	text-align: center;
+}
+
+#genre-instruction,
+#mbti-instruction {
+	text-align: center;
+	font-size: large;
+}
+
+#genre-instruction-foot,
+#mbti-instruction-foot {
+	text-align: center;
+	font-size: small;
+}
+
+#button-row {
+	display: flex;
+	justify-content: center;
+}
+
+.genre-button,
+.mbti-button,
+#confirm-button {
+	margin: 5px;
+	padding-top:3px;
+	padding-bottom: 3px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 /*MUSIC MBTI DISTRIBUTION*/
 .select-container {
 	text-align: center;
