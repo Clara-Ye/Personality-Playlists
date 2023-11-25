@@ -66,6 +66,15 @@ class TestSelection {
             }
         });
 
+        this.mbtiGenreData = this.genreListKey.map(genre => {
+            let genreObj = this.mbtiGenreData[genre];
+            return {
+                genre: genreObj.genre,
+                average: genreObj.average,
+                ...genreObj, // Spread the MBTI types and their averages
+            };
+        });
+
         console.log(this.mbtiGenreData);
 
         this.testCompleted = false;
@@ -302,10 +311,10 @@ class TestSelection {
             let testVis;
             // selected genre, display MBTI rankings
             if (vis.selectedGenres.length > 0 && vis.selectedGenres.length <= 3) {
-                testVis = new TestMbtiVis("test_vis", vis.displayData, vis.genreData, vis.selectedGenres);
+                testVis = new TestMbtiVis("test_vis", vis.mbtiGenreData, vis.genreData, vis.selectedGenres);
             // selected MBTI, display genre rankings
             } else if (vis.selectedMbti.length == 1) {
-                testVis = new TestGenreVis("test_vis", vis.displayData, vis.genreData, vis.selectedMbti);
+                testVis = new TestGenreVis("test_vis", vis.mbtiGenreData, vis.genreData, vis.selectedMbti);
             } else {
                 console.log("error in selection");
             }
