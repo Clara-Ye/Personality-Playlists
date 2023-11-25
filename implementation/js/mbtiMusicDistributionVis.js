@@ -25,7 +25,7 @@ class mbtiMusicDistributionVis {
             .style("margin-left", "10%")
             .style("background", `url('img/sketch/rect_2.png')`)
             .style("background-size", "100% 100%")
-            .style("width", "250px")
+            .style("width", "20%")
             .style("height", "50px")
             .style("padding", "5px");
 
@@ -56,15 +56,9 @@ class mbtiMusicDistributionVis {
         vis.selectedMusicType = vis.uniqueGenres[0];
 
         vis.margin = { top: 20, right: 20, bottom: 20, left: 20 };
-        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
-        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
         // Append SVG to the main container
         vis.svg = mainContainer.append("svg")
-            .attr("width", vis.width)
-            .attr("height", vis.height)
-            .append("g")
-            // .attr("transform", `translate(${vis.margin.left}, ${vis.margin.top})`);
 
         vis.defs = vis.svg.append("defs");
         vis.sketchImages = ["circle_01.png", "circle_02.png", "circle_03.png", "circle_04.png", "circle_05.png", "circle_06.png",
@@ -84,9 +78,10 @@ class mbtiMusicDistributionVis {
 
         // Initialize an empty force simulation
         vis.simulation = d3.forceSimulation()
-            .force("center", d3.forceCenter(vis.width*0.7, vis.height /2))
-            .force("charge", d3.forceManyBody())
-            .force("collide", d3.forceCollide().radius(() => 40))
+            .force("charge", d3.forceManyBody().strength(50))
+            .force("collide", d3.forceCollide().radius(function(d) {
+                return vis.radiusScale(d.average) + 1;
+            }))
             .on("tick", () => {
                 vis.svg.selectAll(".mbti-circle")
                     .attr("cx", d => d.x)
@@ -97,9 +92,36 @@ class mbtiMusicDistributionVis {
                     .attr("y", d => d.y);
             });
 
+        vis.radiusScale = d3.scaleSqrt();
 
+        window.addEventListener('resize', () => vis.handleResize());
 
         vis.wrangleData();
+        vis.handleResize();
+
+    }
+
+    handleResize() {
+        let vis = this;
+
+        // Update width and height based on the new window size
+        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
+        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
+
+        // Update the SVG dimensions
+        vis.svg.attr("width", vis.width)
+            .attr("height", vis.height);
+
+        // Update the force simulation center
+        vis.simulation.force("center", d3.forceCenter(vis.width*0.6, vis.height /2));
+
+        // Update the radius scale range based on the new dimensions
+        vis.minRadius = vis.width/80;
+        vis.maxRadius = vis.width/25;
+        vis.radiusScale.range([vis.minRadius, vis.maxRadius]);
+
+        // Apply updated radius to circles and possibly adjust label positions
+        vis.updateVis();
     }
 
     wrangleData() {
@@ -183,6 +205,9 @@ class mbtiMusicDistributionVis {
         // console.log(vis.displayDataByMbti);
         //
         // // Update the visualization
+
+
+
         vis.updateVis();
     }
 
@@ -195,9 +220,8 @@ class mbtiMusicDistributionVis {
         // Define the radius scale
         let maxAverage = d3.max(vis.displayData, d => d.average);
         let minAverage = d3.min(vis.displayData, d => d.average);
-        vis.radiusScale = d3.scaleSqrt()
-            .domain([minAverage, maxAverage])
-            .range([20, 80]);
+
+        vis.radiusScale.domain([minAverage, maxAverage])
 
 
         // Update or create patterns based on the updated circle radius
@@ -221,6 +245,16 @@ class mbtiMusicDistributionVis {
                 .attr("x", 0)
                 .attr("y", 0);
         });
+
+        // Correct the collision radius
+        vis.simulation.force("collide").radius(function(d) {
+            return vis.radiusScale(d.average)+1;
+        });
+
+        // Manually tick the simulation
+        for (let i = 0; i < 150; i++) {
+            vis.simulation.tick();
+        }
 
         let circles = vis.svg.selectAll(".mbti-circle")
             .data(vis.displayData, d => d.type);
@@ -257,8 +291,11 @@ class mbtiMusicDistributionVis {
             .style("fill-opacity", 0)
             .remove();
 
-        // Restart the simulation with each update
-        vis.simulation.nodes(vis.displayData).alpha(1).restart();
+
+        // Restart the simulation with updated data
+        vis.simulation.nodes(vis.displayData)
+            .alpha(1)
+            .restart();
     }
 
 
