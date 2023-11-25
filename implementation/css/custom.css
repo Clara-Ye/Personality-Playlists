@@ -93,7 +93,7 @@ main{
     height:10vh;
 }
 /* Adjusting Section and Placeholder Styles */
-.section1, .section2, .section3, .section4, .section5, .section6 {
+.section1, .section2, .section3, .section4, .section5, .section6, .section7, .section8 {
     position: relative; /* Ensure relative positioning for absolute child elements */
     height: 90vh; /* Maintaining full height */
     width:80%;
