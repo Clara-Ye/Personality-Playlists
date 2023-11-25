@@ -12,12 +12,6 @@ class mbtiDetailVis {
     initVis() {
         let vis = this;
 
-        vis.margin = { top: 50, right: 50, bottom: 50, left: 50 };
-
-        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right
-        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom
-
-
         // Create buttons for each MBTI letter
         vis.mbtiLetters = ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P'];
         vis.mbtiFullNames = {
@@ -47,12 +41,19 @@ class mbtiDetailVis {
 
         vis.mbtiLetters.forEach(letter => {
             let fullName = vis.mbtiFullNames[letter];
-            let buttonText = `<strong>${letter}</strong>${fullName.slice(1)}`;
+            // let buttonText = `<strong>${letter}</strong>${fullName.slice(1)}`;
+            let buttonText = `${fullName}`;
+
+            let randomIndex = Math.floor(Math.random() * 8);
+            let imageUrl = `img/sketch/rect_${randomIndex + 1}.png`;
+            console.log(imageUrl);
 
             vis.buttonContainer.append('button')
                 .attr('class', 'mbti-letter-button')
                 .attr('id', `button-${letter}`)
                 .html(buttonText)
+                .style('background', `url('${imageUrl}') no-repeat center center`)
+                .style("background-size", "100% 100%")
                 .style('width', '48%')
                 .style('margin', '1%')
                 .style('padding', '10px')
@@ -129,7 +130,7 @@ class mbtiDetailVis {
                 .attr('class', 'mbti-details-container');
 
             detailsContainer.append('img')
-                .attr('src', `img/${mbtiType.mbti}.png`)
+                .attr('src', `img/MBTI/${mbtiType.mbti}.png`)
                 .attr('alt', mbtiType.mbti)
                 .style('max-width', '60%')
                 .style('max-height', '60%');

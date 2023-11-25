@@ -22,8 +22,8 @@ class mbtiAllVis {
 		vis.imgContainer = d3.select('#' + vis.parentElement).append('div')
 			.attr('class', 'img-container')
 			.style('position', 'relative')
-			.style('width', vis.width + 'px')
-			.style('height', vis.height + 'px');
+			.style('width', vis.width)
+			.style('height', vis.height);
 
 		vis.wrangleData();
 	}
@@ -54,7 +54,7 @@ class mbtiAllVis {
 
 		vis.displayData.forEach((d, index) => {
 			let img = document.createElement('img');
-			img.src = `img/${d.mbti}.png`;
+			img.src = `img/MBTI/${d.mbti}.png`;
 			img.alt = d.mbti;
 			img.style.position = 'absolute';
 			img.style.cursor = 'pointer';

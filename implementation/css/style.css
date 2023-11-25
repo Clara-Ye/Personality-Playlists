@@ -45,7 +45,8 @@ body, html {
 }
 .mbti-letter-button-selected {
 	background-color: #00c4ff;
-	color: white;
+	color: #c22121;
+	font-weight: bolder;
 }
 
 .mbti-info {
@@ -72,21 +73,39 @@ body, html {
 }
 
 .mbti-letter-button {
-	padding: 10px;
-	cursor: pointer;
 	width: 48%;
 	margin: 1%;
+	padding: 10px;
 	flex: 1 0 21%;
+	background-size: cover;
+	border: none;
+	outline: none;
 }
 
 
 
 /*MUSIC MBTI DISTRIBUTION*/
-.select-container {
+.music-type-select {
+	border: none;
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	padding: 10px 20px;
 	text-align: center;
+	text-align-last: center;
+	line-height: 1.5em;
 }
 
-.music-type-select {
-	padding: 5px;
-	font-size: 1em;
+option {
+	background-color: rgba(255, 255, 255, 0.5);
+	border: none;
+}
+
+
+.select-container {
+	position: absolute;
+	left: 10px;
+	z-index: 1000;
+	text-align: center;
 }

@@ -8,33 +8,45 @@ class mbtiMusicDistributionVis {
         this.initVis();
     }
 
-
-
     initVis() {
         let vis = this;
 
-        // Create a main container
-        let mainContainer = d3.select("#" + vis.parentElement)
-            .append("div")
-            .style("display", "flex")
-            .style("align-items", "center");
+        vis.margin = { top: 40, right: 40, bottom: 40, left: 40 };
+
+        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
+        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
+
+        vis.svg = d3.select("#" + vis.parentElement).append("svg")
+            .attr("width", vis.width+vis.margin.left+vis.margin.right)
+            .attr("height", vis.height+vis.margin.top+vis.margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${vis.margin.left}, ${vis.margin.top})`);
+
+        vis.defs = vis.svg.append("defs");
+        vis.sketchImages = ["circle_01.png", "circle_02.png", "circle_03.png"];
+        // Create a pattern for each sketch image
+        vis.sketchImages.forEach((sketch, index) => {
+            let patternId = 'sketch-pattern-${index}';
+            vis.defs.append("pattern")
+                .attr("id", patternId)
+                .attr("patternUnits", "objectBoundingBox")
+                .attr("width", 1)
+                .attr("height", 1)
+                .append("image")
+                .attr("xlink:href", 'img/sketch/${sketch}')
+                .attr("width", 1)
+                .attr("height", 1)
+                .attr("preserveAspectRatio", "xMidYMid slice");
+        });
 
         // Add a selection box for music types
-        let selectContainer = mainContainer.append("div")
+        let selectContainer = d3.select("#" + vis.parentElement).append("div")
             .attr("class", "select-container")
-            .style("margin-left", "10%")
-            .style("background", `url('img/sketch/rect_2.png')`)
-            .style("background-size", "100% 100%")
-            .style("width", "250px")
-            .style("height", "50px")
-            .style("padding", "5px");
+            .style("margin-top", "10px");
 
         vis.musicTypeSelect = selectContainer
             .append("select")
-            .attr("class", "music-type-select")
-            .style("border", "none")
-            .style("background-color", "transparent")
-            .style("color", "black");
+            .attr("class", "music-type-select");
 
         // Extract unique genres
         vis.uniqueGenres = Array.from(new Set(vis.musicData.map(d => d.Genre)));
@@ -48,56 +60,11 @@ class mbtiMusicDistributionVis {
 
         vis.musicTypeSelect.on("change", function() {
             vis.selectedMusicType = d3.select(this).property("value");
-            vis.musicTypeSelect.property("value", vis.selectedMusicType);
             vis.wrangleData();
         });
 
         // Set the initial selected music type
         vis.selectedMusicType = vis.uniqueGenres[0];
-
-        vis.margin = { top: 20, right: 20, bottom: 20, left: 20 };
-        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
-        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
-
-        // Append SVG to the main container
-        vis.svg = mainContainer.append("svg")
-            .attr("width", vis.width)
-            .attr("height", vis.height)
-            .append("g")
-            // .attr("transform", `translate(${vis.margin.left}, ${vis.margin.top})`);
-
-        vis.defs = vis.svg.append("defs");
-        vis.sketchImages = ["circle_01.png", "circle_02.png", "circle_03.png", "circle_04.png", "circle_05.png", "circle_06.png",
-            "circle_07.png", "circle_08.png", "circle_09.png", "circle_10.png", "circle_11.png", "circle_12.png"];
-        // Create a pattern for each sketch image
-        vis.defs.append("pattern")
-            .attr("id", "hand-drawn-circle")
-            .attr("patternUnits", "objectBoundingBox")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .append("image")
-            .attr("xlink:href", "img/sketch/circle_01.png")
-            .attr("width", 50)
-            .attr("height", 50)
-            .attr("preserveAspectRatio", "none");
-
-
-        // Initialize an empty force simulation
-        vis.simulation = d3.forceSimulation()
-            .force("center", d3.forceCenter(vis.width*0.7, vis.height /2))
-            .force("charge", d3.forceManyBody())
-            .force("collide", d3.forceCollide().radius(() => 40))
-            .on("tick", () => {
-                vis.svg.selectAll(".mbti-circle")
-                    .attr("cx", d => d.x)
-                    .attr("cy", d => d.y);
-
-                vis.svg.selectAll(".mbti-label")
-                    .attr("x", d => d.x)
-                    .attr("y", d => d.y);
-            });
-
-
 
         vis.wrangleData();
     }
@@ -152,6 +119,7 @@ class mbtiMusicDistributionVis {
         vis.displayDataByMusic = filteredMbtiAverages;
         console.log(vis.displayDataByMusic);
 
+
         // // Filter data for the selected MBTI type
         // // let filteredDataByMbti = vis.musicData.filter(d => d.mbti_type === selectedMbtiType);
         // let filteredDataByMbti = vis.musicData.filter(d => d.mbti_type === "ENFJ");
@@ -190,47 +158,33 @@ class mbtiMusicDistributionVis {
     updateVis() {
         let vis = this;
 
-        vis.displayData = Object.entries(vis.displayDataByMusic).map(([type, average]) => ({ type, average }));
+        let displayData = Object.entries(vis.displayDataByMusic).map(([type, average]) => ({ type, average }));
+
 
         // Define the radius scale
-        let maxAverage = d3.max(vis.displayData, d => d.average);
-        let minAverage = d3.min(vis.displayData, d => d.average);
-        vis.radiusScale = d3.scaleSqrt()
+        let maxAverage = d3.max(displayData, d => d.average);
+        let minAverage = d3.min(displayData, d => d.average);
+        let radiusScale = d3.scaleSqrt()
             .domain([minAverage, maxAverage])
             .range([20, 80]);
 
 
-        // Update or create patterns based on the updated circle radius
-        vis.displayData.forEach((d, i) => {
-            let radius = vis.radiusScale(d.average);
-            let patternId = `sketch-pattern-${d.type}`;
-
-            // Remove the old pattern if it exists
-            vis.defs.select(`#${patternId}`).remove();
-
-            // Create a new pattern with updated dimensions
-            vis.defs.append("pattern")
-                .attr("id", patternId)
-                .attr("patternUnits", "objectBoundingBox")
-                .attr("width", 1)
-                .attr("height", 1)
-                .append("image")
-                .attr("xlink:href", `img/sketch/${vis.sketchImages[i % vis.sketchImages.length]}`)
-                .attr("width", radius * 2)
-                .attr("height", radius * 2)
-                .attr("x", 0)
-                .attr("y", 0);
-        });
-
         let circles = vis.svg.selectAll(".mbti-circle")
-            .data(vis.displayData, d => d.type);
+            .data(displayData, d => d.type);
 
         circles.enter()
             .append("circle")
             .merge(circles)
             .attr("class", d => `mbti-circle ${d.type}`)
-            .attr("r", d => vis.radiusScale(d.average))
-            .style("fill", d => `url(#sketch-pattern-${d.type})`)
+            .attr("r", d => radiusScale(d.average))
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("fill", d => {
+                let randomIndex = Math.floor(Math.random() * vis.sketchImages.length);
+                return `url(#sketch-pattern-${randomIndex})`;
+            })
+            .attr("stroke", "black")
+            .attr("stroke-width", "2px");
 
         circles.exit()
             .transition()
@@ -239,7 +193,7 @@ class mbtiMusicDistributionVis {
             .remove();
 
         let labels = vis.svg.selectAll(".mbti-label")
-            .data(vis.displayData, d => d.type);
+            .data(displayData, d => d.type);
 
         labels.enter()
             .append("text")
@@ -257,8 +211,25 @@ class mbtiMusicDistributionVis {
             .style("fill-opacity", 0)
             .remove();
 
+        // Create force simulation
+        let simulation = d3.forceSimulation(displayData)
+            .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
+            .force("charge", d3.forceManyBody().strength(5))
+            .force("collide", d3.forceCollide().radius(d => radiusScale(d.average) + 1))
+            .on("tick", ticked);
+
+        function ticked() {
+            circles
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            labels
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+        }
+
         // Restart the simulation with each update
-        vis.simulation.nodes(vis.displayData).alpha(1).restart();
+        simulation.nodes(displayData).alpha(1).restart();
     }
 
 
