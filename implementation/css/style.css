@@ -126,3 +126,14 @@ body, html {
 .radarLabel:hover {
     cursor: default;
 }
+
+
+/*MUSIC MBTI DISTRIBUTION*/
+.select-container {
+	text-align: center;
+}
+
+.music-type-select {
+	padding: 5px;
+	font-size: 1em;
+}

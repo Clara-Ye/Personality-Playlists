@@ -5,7 +5,8 @@ let promises = [
     d3.json("data/musicOset_artist_centric_clean.json"),
     d3.json("data/musicOset_song_centric_clean.json"),
     d3.json("data/MBTI.json"),
-    d3.json("data/mbti_music_data_clean.json")
+    d3.json("data/mbti_music_data_clean.json"),
+    d3.json("data/mbti_music_data_clean_pivot.json")
 ];
 
 Promise.all(promises)
@@ -39,5 +40,9 @@ function createVis(data) {
     
     // create test instance
     let testSelect = new TestSelection("test_select", mbtiTestData, genreData);
+
+    // create music distribution instance
+    let mbtiMusicDistribution = new mbtiMusicDistributionVis("mbtiMusicDistribution", mbtiDescData, data[5]);
+
 
 }
