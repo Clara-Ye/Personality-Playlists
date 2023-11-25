@@ -1,10 +1,9 @@
 
 class RadarVis {
 
-    constructor(_parentElement, _data, _acousticsData) {
+    constructor(_parentElement, _data) {
         this.parentElement = _parentElement;
         this.data = _data;
-        this.acousticsData = _acousticsData;
 
         this.initVis();
     }
@@ -112,7 +111,7 @@ class RadarVis {
                 </div>`);
         // set attributes
         vis.radarTooltip.style('opacity', 0);
-        vis.tooltipWidth = d3.max([vis.width*0.5, 300]);
+        vis.tooltipWidth = d3.max([vis.width*0.5, 275]);
         document.getElementById("radar-tooltip-container").style.width = `${vis.tooltipWidth}px`;
 
         vis.updateVis();
@@ -145,11 +144,9 @@ class RadarVis {
         // update tooltip label
         let feature = d3.select(element).text();
         d3.select("#radar-tooltip-feat-container")
-            .text(`${feature.charAt(0).toUpperCase() + feature.substr(1)}: ${vis.data[feature].toPrecision(3)}`); // upper case first letter
+            .text(`${feature}: ${vis.data[feature].toPrecision(3)}`); // upper case first letter
 
-        let featureRow = vis.acousticsData.find(r => r.feature == feature);
-        d3.select("#radar-tooltip-desc-container")
-            .text(featureRow.desc);
+        // TODO: update genre description
 
         // get text location
         let x = parseFloat(d3.select(element).attr('x')) + window.pageXOffset + vis.margin.left,
@@ -158,12 +155,8 @@ class RadarVis {
         // display tooltip
         vis.radarTooltip
             .style("opacity", 1)
-            .style("left", function() {
-                if (x < vis.width * 0.33) { return `${x + vis.tooltipWidth * 0.5}px`; }
-                else if (x < vis.width * 0.66) { return `${x + vis.tooltipWidth * 0.65}px`; }
-                else { return `${x + vis.tooltipWidth * 0.7}px`; }
-            })
-            .style("top", `${y + vis.height * 0.3}px`);
+            .style("left", `${x}px`)
+            .style("top", `${y + vis.height/5}px`);
 
     }
 
