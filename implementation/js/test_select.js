@@ -91,7 +91,6 @@ class TestSelection {
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
         // set up page structure
-
         vis.testRow = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr("class", "row")
@@ -103,58 +102,46 @@ class TestSelection {
             .attr("id", "button-row");
 
         vis.genreTestCol = vis.testRow.append("div")
-            .attr("class", "col-6 test-col")
+            .attr("class", "col-6")
             .attr("id", "genre-test-col");
 
         vis.mbtiTestCol = vis.testRow.append("div")
-            .attr("class", "col-6 test-col")
+            .attr("class", "col-6")
             .attr("id", "mbti-test-col");
 
         // add instructions
 
         vis.genreInstruction = vis.genreTestCol.append("div")
-            .attr("class", "row")
-            .attr("id", "genre-instruction-container")
-            .append("div")
-            .html(`<div id="genre-instruction">Select up to 3 of your favorite genres</div>
-                   <div id="genre-instruction-foot">(and we'll guess your MBTI)</div>`);
+            .attr("id", "genre-instruction")
+            .html(`<div>This is a very informative instruction.</div>`);
 
-        vis.genreIcon = vis.genreTestCol.append("div")
-            .attr("class", "row")
-            .attr("id", "genre-icon-container")
-            .append("img")
+        vis.genreIcon = vis.genreTestCol.append("img")
             .attr("src", "img/random/music_icon.svg")
             .style("width", "45%");
 
         vis.mbtiInstruction = vis.mbtiTestCol.append("div")
-            .attr("class", "row")
-            .attr("id", "mbti-instruction-container")
-            .append("div")
-            .html(`<div id="mbti-instruction">Select your MBTI personality type:</div>
-                   <div id="mbti-instruction-foot">(and we'll guess your favorite music genre)</div>`);
+            .attr("id", "genre-instruction")
+            .html(`<div>This is a very informative instruction.</div>`);
 
-        vis.mbtiIcon = vis.mbtiTestCol.append("div")
-            .attr("class", "row")
-            .attr("id", "mbti-icon-container")
-            .append("img")
+        vis.mbtiIcon = vis.mbtiTestCol.append("img")
             .attr("src", "img/random/mbti_icon.svg")
             .style("width", "45%");
 
         // add selection buttons
 
-        vis.genreButtonGroup = vis.genreTestCol.append("div")
-            .attr("class", "row")
+        vis.genreButtonGroup = vis.genreTestCol
+            .append("div")
             .attr("id", "genre-button-container")
+            .style("width", "50%")
             .append("g")
-            .attr("class", "button genre-button")
-            .style("width", "70%");
+            .attr("class", "button genre-button");
 
-        vis.mbtiButtonGroup = vis.mbtiTestCol.append("div")
-            .attr("class", "row")
-            .attr("id", "mbti-button-container")
+        vis.mbtiButtonGroup = vis.mbtiTestCol
+            .append("div")
+            .attr("id", "genre-button-container")
+            .style("width", "50%")
             .append("g")
-            .attr("class", "button mbti-button")
-            .style("width", "70%");
+            .attr("class", "button mbti-button");
 
         // add confirm button
 
@@ -162,7 +149,7 @@ class TestSelection {
             .text("Confirm")
             .attr("class", "button")
             .attr("id", "confirm-button")
-            .style("width", "10%");
+            .on("click", function(event) { vis.handleMouseClickOnConfirm(event, vis) });
 
 
         // initialize selected items
@@ -193,17 +180,12 @@ class TestSelection {
             .append("button")
             .attr("class", "genre-button")
             .merge(vis.genreButtons)
-            .transition()
-            .duration(200)
             .text(d => d)
             .style("min-width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
-                if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#74729a"; }
-                else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9d9bc2"; }
-                else if (vis.selectedGenres.length > 2 && vis.selectedGenres[2] == d) { return "#c1bedf"; }
+                if (vis.selectedGenres.includes(d)) { return "#74729a"; }
                 else { return "#ffffff" }
             })
-        vis.genreButtonGroup.selectAll(".genre-button")
             .on("click", function(event, d)  { vis.handleMouseClickOnGenreButton(this, event, d, vis); } );
 
         // add mbti selection buttons
@@ -213,33 +195,14 @@ class TestSelection {
             .append("button")
             .attr("class", "mbti-button")
             .merge(vis.mbtiButtons)
-            .transition()
-            .duration(200)
             .text(d => d)
             .style("width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
                 if (vis.selectedMbti.includes(d)) { return "#74729a"; }
                 else { return "#ffffff" }
             })
-        vis.mbtiButtons = vis.mbtiButtonGroup.selectAll(".mbti-button")
             .on("click", function(event, d)  { vis.handleMouseClickOnMbtiButton(this, event, d, vis); } );
         vis.mbtiButtons.exit().remove();
-
-        if (vis.selectedGenres.length > 0 || vis.selectedMbti.length > 0) {
-            vis.confirmButton
-                .transition()
-                .duration(200)
-                .style("background-color", "#FFFFFF");
-            vis.confirmButton
-                .on("click", function(event) { vis.handleMouseClickOnConfirm(event, vis) });
-        } else {
-            vis.confirmButton
-                .transition()
-                .duration(200)
-                .style("background-color", "#AAAAAA");
-            vis.confirmButton
-                .on("click", null);
-        }
     }
 
 
