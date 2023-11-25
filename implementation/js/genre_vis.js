@@ -36,7 +36,7 @@ class GenreVis {
             .attr("class", "genre-icon");
 
         // add small tooltip (hover) container
-        vis.tooltipSmall = d3.select("body")
+        vis.tooltipSmall = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr('class', "tooltip")
             .attr('id', 'genre-tooltip-small')
@@ -57,7 +57,7 @@ class GenreVis {
         document.getElementById("genre-tooltip-small-container").style.width = `${vis.tooltipWidth}px`;
 
         // add large tooltip (click) container
-        vis.tooltipLarge = d3.select("body")
+        vis.tooltipLarge = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr('class', "tooltip")
             .attr('id', 'genre-tooltip-large')
