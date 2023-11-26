@@ -289,61 +289,134 @@ main{
 
 /*MBTI ALL*/
 .mbti-tooltip {
-	display: none;
-	position: absolute;
-	background-color: white;
-	border: 1px solid #ccc;
-	padding: 10px;
-	z-index: 100;
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 100;
+    text-align: center;
 }
 
 .mbti-img {
-	position: absolute;
-	width: 100px;
-	height: 100px;
+    position: absolute;
+    width: 100px;
+    height: 100px;
 }
 
 /*MBTI DETAIL*/
 .image-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100%;
-}
-.mbti-letter-button-selected {
-	background-color: #00c4ff;
-	color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    height: 40%;
+    position: relative;
 }
 
 .mbti-info {
-	margin-left: 20px; /* Adjust as needed */
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: center; /* This will vertically center the text in the remaining space */
+    margin-left: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #mbtiDetail {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button-container {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 10px;
-	width: 50%;
-	padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 40%;
+    padding: 10px;
+    align-items: center;
 }
 
 .mbti-letter-button {
-	padding: 10px;
-	cursor: pointer;
-	width: 48%;
-	margin: 1%;
-	flex: 1 0 21%;
+    width: 80%;
+    margin: 1%;
+    padding: 10px;
+    flex: 1 0 20%;
+    background-size: cover;
+    background-position: center;
+    border: none;
+    outline: none;
+}
+
+.mbti-letter-button-selected {
+    color: #c22121;
+    font-weight: bolder;
+}
+
+.mbit-detail-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mbti-info h3{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    margin: 0;
+    font-size: 2vw;
+    text-align: center;
+}
+
+.personalityClass {
+    color: #98a6a9;
+    font-size: 20px;
+}
+.personality-color-sentinels {
+    color: #8fdee1;
+    fill: #8fdee1;
+}
+
+.personality-color-explorers {
+    color: #f3dc50;
+    fill: #f3dc50;
+}
+
+.personality-color-diplomats {
+    color: #74b48c;
+    fill: #74b48c;
+}
+
+.personality-color-analysts {
+    color: #747db4;
+    fill: #747db4;
+}
+
+
+/*MUSIC MBTI DISTRIBUTION*/
+.music-type-select {
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-align-last: center;
+    line-height: 1.5em;
+}
+
+option {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+}
+
+.select-container {
+    position: absolute;
+    left: 10px;
+    z-index: 1000;
+    text-align: center;
 }
 
 
@@ -426,12 +499,5 @@ main{
  }
 
 
-/*MUSIC MBTI DISTRIBUTION*/
-.select-container {
-	text-align: center;
-}
 
-.music-type-select {
-	padding: 5px;
-	font-size: 1em;
-}
+
