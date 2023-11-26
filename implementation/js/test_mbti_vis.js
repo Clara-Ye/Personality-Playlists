@@ -92,8 +92,8 @@ class TestMbtiVis {
         vis.baseline = 'same_genres';
 
         vis.baselineButton = vis.svg.append("g")
-            .attr("class", "button")
-            .attr("id", "switch-button");
+            .attr("class", "button switch-baseline-button")
+            .attr("id", "switch-button-mbti");
 
         vis.baselineButton.append("rect")
             .attr("x", vis.width / 2 - 60)

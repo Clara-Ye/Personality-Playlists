@@ -415,6 +415,12 @@ main{
     margin: 5px;
 }
 
+/*TEST RESULT*/
+.switch-baseline-button:hover {
+    cursor: pointer;
+ }
+
+
 /*MUSIC MBTI DISTRIBUTION*/
 .select-container {
 	text-align: center;
