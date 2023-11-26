@@ -22,7 +22,7 @@ body{
     height: 100vh;
     background-color:#393A4C;
     overflow:hidden;
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: center;
 }
