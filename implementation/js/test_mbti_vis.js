@@ -26,6 +26,7 @@ class TestMbtiVis {
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
 
         vis.svg.append("text")
+            .attr("id", "test-genre-vis-header")
             .text(`As you like ${vis.selectedGenres}, you are`)
             .attr("x", vis.width/2)
             .attr("y", vis.height * 0.05)
@@ -42,11 +43,11 @@ class TestMbtiVis {
         // add center line
         vis.svg.append("line")
             .attr("x1", vis.width / 2)
-            .attr("y1", 100) // Starting from the top of the SVG
+            .attr("y1", 75)
             .attr("x2", vis.width/2)
-            .attr("y2", vis.height - 50) // Ending at the bottom of the SVG
-            .style("stroke-dasharray", "5,5") // Set the stroke to dashed
-            .style("stroke", "black"); // Set the color of the line
+            .attr("y2", vis.height - 75)
+            .style("stroke-dasharray", "5,5")
+            .style("stroke", "black");
 
         // TODO: initialize tooltip
 
@@ -60,9 +61,9 @@ class TestMbtiVis {
 
 
         vis.centers = {
-            positive: {x: vis.width*0.2, y: vis.height*0.55},
-            neutral: {x: vis.width*0.5, y: vis.height*0.2},
-            negative: {x: vis.width*0.8, y: vis.height*0.55}
+            positive: {x: vis.width*0.2, y: vis.height*0.6},
+            neutral: {x: vis.width*0.5, y: vis.height*0.3},
+            negative: {x: vis.width*0.8, y: vis.height*0.6}
         };
 
 
@@ -90,7 +91,29 @@ class TestMbtiVis {
 
         vis.baseline = 'same_genres';
 
+        vis.baselineButton = vis.svg.append("g")
+            .attr("class", "button")
+            .attr("id", "switch-button");
+
+        vis.baselineButton.append("rect")
+            .attr("x", vis.width / 2 - 60)
+            .attr("y", vis.height - 50)
+            .attr("width", 120)
+            .attr("height", 30)
+            .attr("fill", "#FFFFFF")
+            .style("stroke", "black")
+            .style("stroke-width", "2px");
+
+        vis.baselineButton.append("text")
+            .attr("x", vis.width / 2)
+            .attr("y", vis.height - 30)
+            .attr("text-anchor", "middle")
+            .text("Switch Baseline");
+
+        vis.baselineButton.on("click", function(event) { vis.switchBaseline(event, vis); } );
+
         vis.wrangleData();
+        vis.updateVis();
     }
 
 
@@ -193,14 +216,17 @@ class TestMbtiVis {
             y: Math.random() * vis.height
         }))
 
-        vis.bubbles = vis.svg.selectAll('.mbti-bubble')
-            .data(vis.nodes, d => d.mbti)
-            .enter()
-            .append('g')
+        vis.circles = vis.svg.selectAll('.mbti-bubble-circle')
+            .data(vis.nodes, d => d.mbti);
 
-        vis.circles = vis.bubbles
+        // Remove existing circles that are no longer bound to data
+        vis.circles.exit().remove();
+
+        // Enter new circles
+        vis.circles.enter()
             .append("circle")
-            .attr("class", ".mbti-bubble-circle")
+            .attr("class", "mbti-bubble-circle")
+            .merge(vis.circles)  // Merge existing and new circles
             .attr("r", d => d.radius)
             .attr("fill", d => {
                 if (d.rating_relative >= 0) { return vis.colorPositive(Math.abs(d.rating_relative)); }
@@ -209,9 +235,18 @@ class TestMbtiVis {
             .style("stroke", "black")
             .style("stroke-width", "2px");
 
-        vis.labels = vis.bubbles
+        // Update the data binding for labels
+        vis.labels = vis.svg.selectAll('.mbti-bubble-label')
+            .data(vis.nodes, d => d.mbti);
+
+        // Remove existing labels that are no longer bound to data
+        vis.labels.exit().remove();
+
+        // Enter new labels
+        vis.labels.enter()
             .append("text")
             .attr("class", "mbti-bubble-label")
+            .merge(vis.labels)  // Merge existing and new labels
             .attr("text-anchor", "middle")
             .style("fill", "black")
             .attr("dy", "0.35em")
@@ -236,6 +271,21 @@ class TestMbtiVis {
 
     charge(d) {
         return Math.pow(d.radius, 2.0) * 0.01
+    }
+
+    switchBaseline(event, vis) {
+        if (vis.baseline == "same_genres") {
+            vis.baseline = "all_people";
+            vis.svg.select("#test-genre-vis-header")
+                .text(`As you like ${vis.selectedGenres}, compared to population average, you are`)
+            vis.wrangleData();
+        }
+        else {
+            vis.baseline = "same_genres";
+            vis.svg.select("#test-genre-vis-header")
+                .text(`As you like ${vis.selectedGenres}, you are`)
+            vis.wrangleData();
+        }
     }
 
     // TODO: display tooltip on hover
