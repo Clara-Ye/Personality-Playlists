@@ -29,9 +29,9 @@ class GenreVis {
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
 
         // initialize icon dimensions and icon group
-        vis.radius = (vis.width - vis.margin.left - vis.margin.right) / 15;
-        vis.hSpacing = (vis.width - vis.margin.left - vis.margin.right) / 15 * 1.25;
-        vis.vSpacing = (vis.height - vis.margin.top - vis.margin.bottom - 6 * vis.radius) / 6;
+        vis.radius = Math.floor((vis.width - vis.margin.left - vis.margin.right) / 15);
+        vis.hSpacing = Math.floor((vis.width - vis.margin.left - vis.margin.right) / 15 * 1.25);
+        vis.vSpacing = Math.floor((vis.height - vis.margin.top - vis.margin.bottom - 6 * vis.radius) / 6);
         vis.genreIcons = vis.svg.append("g")
             .attr("class", "genre-icon");
 
@@ -73,8 +73,8 @@ class GenreVis {
                             <!-- exit button -->
                             <div class="col-1">
                                 <div class="exit-button" id="genre-tooltip-large-exit-button">
-                                    <i class="fas fa-times"></i>
-                                </div>                                
+                                    <img src="img/random/close_icon.svg" style="width:24px; height: 24px">
+                                </div>
                             </div>
                         </div>
                         <!-- content -->
@@ -98,11 +98,11 @@ class GenreVis {
         vis.tooltipLarge
             .style('opacity', 0)
             .style("left", `-1080px`);
-        document.getElementById("genre-tooltip-large-container").style.width = `${4*vis.hSpacing + 10*vis.radius + vis.margin.left}px`;
-        document.getElementById("genre-tooltip-large-container").style.height = `${2*vis.hSpacing + 6*vis.radius + vis.margin.top}px`;
+        document.getElementById("genre-tooltip-large-container").style.width = `${vis.width - vis.hSpacing/2}px`;
+        document.getElementById("genre-tooltip-large-container").style.height = `${vis.height - vis.vSpacing*3}px`;
 
-        vis.tooltipLeft = document.getElementById(vis.parentElement).getBoundingClientRect().left + vis.margin.left;
-        vis.tooltipTop = document.getElementById(vis.parentElement).getBoundingClientRect().top + vis.height/2 - vis.radius*3 - vis.hSpacing;
+        vis.tooltipLeft = vis.margin.left + vis.hSpacing/4;
+        vis.tooltipTop = vis.margin.top + vis.vSpacing;
 
         // create radar chart instance
         vis.radarVis = new RadarVis("radar-vis", vis.genreData[0], vis.acousticsData);
@@ -143,13 +143,13 @@ class GenreVis {
             .merge(vis.genreIcon)
             .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.svg`)
             .attr("x", function(d,i) {
-                if (i < 4 || i >= 9) { return vis.hSpacing / 2 + vis.radius + (i % 4) * (2 * vis.radius + vis.hSpacing); }
-                else { return (i % 5) * (2 * vis.radius + vis.hSpacing); }
+                if (i < 4 || i >= 9) { return vis.margin.left + vis.hSpacing / 2 + vis.radius + (i % 4) * (2 * vis.radius + vis.hSpacing); }
+                else { return vis.margin.left + (i % 5) * (2 * vis.radius + vis.hSpacing); }
             })
             .attr("y", function(d,i) {
-                if (i < 4) { return 2 * vis.vSpacing; }
-                else if (i < 9) { return 3 * vis.vSpacing + 2 * vis.radius; }
-                else { return 4 * vis.vSpacing + 4 * vis.radius; }
+                if (i < 4) { return vis.margin.top + 2 * vis.vSpacing; }
+                else if (i < 9) { return vis.margin.top + 3 * vis.vSpacing + 2 * vis.radius; }
+                else { return vis.margin.top + 4 * vis.vSpacing + 4 * vis.radius; }
             })
             .attr("width", 2 * vis.radius)
             .attr("height", 2 * vis.radius);
@@ -189,8 +189,8 @@ class GenreVis {
         vis.tooltipSmall
             .style("opacity", 1)
             .style("left", function() {
-                if (x <= vis.width/2) { return `${x + 3 * vis.radius}px`; }
-                else { return `${x + vis.hSpacing / 2 - vis.tooltipWidth}px` }
+                if (x <= vis.width/2) { return `${x + vis.radius * 1.2 }px`; }
+                else { return `${x - vis.radius * 1.2 - vis.tooltipWidth}px` }
             })
             .style("top", `${y - vis.tooltipHeight/2}px`);
 

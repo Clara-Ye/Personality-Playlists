@@ -247,6 +247,11 @@ main{
     cursor: pointer;
 }
 
+#genre-tooltip-small,
+#genre-tooltip-large {
+    position: absolute;
+}
+
 #genre-tooltip-small-container {
     border: thin solid grey;
     border-radius: 5px;
@@ -276,9 +281,9 @@ main{
 }
 
 #genre-tooltip-large .exit-button {
-    font-size: 20px;
+    cursor: pointer;
     position: absolute;
-    top: 20px;
+    top: 28px;
     right: 20px;
 }
 
