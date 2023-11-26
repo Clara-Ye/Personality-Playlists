@@ -278,11 +278,15 @@ class mbtiMusicDistributionVis {
         labels.enter()
             .append("text")
             .merge(labels)
-            .attr("class", "mbti-label")
+            .attr("class", d => {
+                let mbtiEntry = vis.mbtiData.find(entry => entry.mbti === d.type);
+                let personalityColorClass = mbtiEntry ? `personality-color-${mbtiEntry.class.toLowerCase()}` : 'default-class-color';
+                return `mbti-label ${personalityColorClass}`;
+            })
             .attr("text-anchor", "middle")
-            .style("fill", "black")
             .attr("dy", "0.35em")
             .text(d => `${d.type}: ${Number.isFinite(d.average) ? d.average.toFixed(2) : "N/A"}`);
+
 
 
         labels.exit()

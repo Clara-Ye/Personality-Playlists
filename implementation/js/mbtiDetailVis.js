@@ -24,6 +24,7 @@ class mbtiDetailVis {
             'J': 'Judging',
             'P': 'Perceiving'
         };
+
         vis.mbtiPairs = {
             'E': 'I', 'I': 'E',
             'S': 'N', 'N': 'S',
@@ -32,12 +33,7 @@ class mbtiDetailVis {
         };
         vis.order = ['E', 'I', 'N', 'S', 'T', 'F', 'J', 'P'];
         vis.buttonContainer = d3.select('#' + vis.parentElement).append('div')
-            .attr('class', 'button-container')
-            .style('display', 'grid')
-            .style('grid-template-columns', 'repeat(2, 1fr)')
-            .style('gap', '10px')
-            .style('width', '50%')
-            .style('align-items', 'center');
+            .attr('class', 'button-container');
 
         vis.mbtiLetters.forEach(letter => {
             let fullName = vis.mbtiFullNames[letter];
@@ -54,19 +50,13 @@ class mbtiDetailVis {
                 .html(buttonText)
                 .style('background', `url('${imageUrl}') no-repeat center center`)
                 .style("background-size", "100% 100%")
-                .style('width', '48%')
-                .style('margin', '1%')
-                .style('padding', '10px')
-                .style('flex', '1 0 21%')
                 .on('click', function() { vis.letterClicked(letter); })
                 // .on('click', function() { console.log(`Button ${letter} clicked`); });
         });
 
         // Prepare a container for the selected MBTI image
         vis.imageContainer = d3.select('#' + vis.parentElement).append('div')
-            .attr('class', 'image-container')
-            .style('position', 'relative')
-            .style('width', '50%');
+            .attr('class', 'image-container');
 
         vis.wrangleData();
     }
@@ -139,8 +129,13 @@ class mbtiDetailVis {
             let infoDiv = detailsContainer.append('div')
                 .attr('class', 'mbti-info');
 
-            infoDiv.append('h3').text(mbtiType.personality);
-            infoDiv.append('p').text(`Class: ${mbtiType.class}`);
+            let personalityColorClass = `personality-color-${mbtiType.class.toLowerCase()}`;
+
+            infoDiv.append('h3').html(`
+                <span class="${personalityColorClass}"><strong>${mbtiType.personality}</strong></span><br>
+                <span class="personalityClass">Class: ${mbtiType.class}</span>
+            `);
+
             infoDiv.append('p').text(mbtiType.description);
 
         }

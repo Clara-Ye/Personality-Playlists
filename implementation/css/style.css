@@ -42,12 +42,9 @@ body, html {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100%;
-}
-.mbti-letter-button-selected {
-	background-color: #00c4ff;
-	color: #c22121;
-	font-weight: bolder;
+	width: 40%;
+	height: 40%;
+	position: relative;
 }
 
 .mbti-info {
@@ -62,27 +59,73 @@ body, html {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 100%;
 }
 
 .button-container {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 10px;
-	width: 50%;
+	gap: 20px;
+	width: 40%;
 	padding: 10px;
+	align-items: center;
 }
 
 .mbti-letter-button {
-	width: 48%;
+	width: 80%;
 	margin: 1%;
 	padding: 10px;
-	flex: 1 0 21%;
+	flex: 1 0 20%;
 	background-size: cover;
+	background-position: center;
 	border: none;
 	outline: none;
 }
 
+.mbti-letter-button-selected {
+	color: #c22121;
+	font-weight: bolder;
+}
+
+.mbit-detail-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.mbti-info h3{
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	margin: 0;
+	font-size: 2vw;
+	text-align: center;
+}
+
+
+.personalityClass {
+	color: #98a6a9;
+	font-size: 20px;
+}
+.personality-color-sentinels {
+	color: #8fdee1;
+	fill: #8fdee1;
+}
+
+.personality-color-explorers {
+	color: #f3dc50;
+	fill: #f3dc50;
+}
+
+.personality-color-diplomats {
+	color: #74b48c;
+	fill: #74b48c;
+}
+
+.personality-color-analysts {
+	color: #747db4;
+	fill: #747db4;
+}
 
 
 /*MUSIC MBTI DISTRIBUTION*/
@@ -102,7 +145,6 @@ option {
 	background-color: rgba(255, 255, 255, 0.5);
 	border: none;
 }
-
 
 .select-container {
 	position: absolute;
