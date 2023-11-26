@@ -33,8 +33,6 @@ class TestSelection {
         this.wrangleGenreMbtiData(this);
         this.wrangleMbtiGenreData(this);
 
-        this.testCompleted = false;
-
         this.initVis();
     }
 
@@ -271,14 +269,25 @@ class TestSelection {
             });
 
             // disable all buttons
-            vis.confirmButton.on("click", null);
+            vis.confirmButton
+                .transition()
+                .duration(200)
+                .style("background-color", "#AAAAAA");
+            vis.confirmButton
+                .on("click", null);
+            vis.genreButtonGroup.selectAll(".genre-button")
+                .transition()
+                .duration(200)
+                .style("background-color", "#AAAAAA");
             vis.genreButtonGroup.selectAll(".genre-button")
                 .on("click", null);
             vis.mbtiButtonGroup.selectAll(".mbti-button")
+                .transition()
+                .duration(200)
+                .style("background-color", "#AAAAAA");
+            vis.mbtiButtonGroup.selectAll(".mbti-button")
                 .on("click", null);
         }
-
-        // TODO: some signal for no second test?
 
     }
 
@@ -324,8 +333,6 @@ class TestSelection {
                 ...genreObj, // Spread the MBTI types and their averages
             };
         });
-
-        console.log(vis.genreMbtiData);
     }
 
     wrangleMbtiGenreData(vis) {
@@ -334,8 +341,6 @@ class TestSelection {
         vis.mbtiList.forEach(mbti => {
             vis.mbtiGenreData[mbti] = { mbti, average: 0, counts: 0 };
         });
-
-        console.log(vis.mbtiGenreData);
 
         vis.mbtiTestData.forEach(record => {
             let mbti = record.mbti_type;
@@ -377,8 +382,6 @@ class TestSelection {
                 ...mbtiObj,
             };
         });
-
-        console.log(vis.mbtiGenreData);
     }
 
 }
