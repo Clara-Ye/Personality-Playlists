@@ -48,10 +48,6 @@ class TestGenreVis {
             .style("stroke-dasharray", "5,5") // Set the stroke to dashed
             .style("stroke", "black"); // Set the color of the line
 
-        // TODO: add proceed button
-
-        // TODO: initialize tooltip
-
         // initialize scales
         vis.r = d3.scaleSqrt()
             .range([20, vis.width/14]);
@@ -60,14 +56,13 @@ class TestGenreVis {
         vis.colorNegative = d3.scaleSequential()
             .range(["#FFFFFF", "#666666"]);
 
-
+        // initialize simulation
         vis.centers = {
-            positive: {x: vis.width*0.2, y: vis.height*0.55},
-            neutral: {x: vis.width*0.5, y: vis.height*0.2},
-            negative: {x: vis.width*0.8, y: vis.height*0.55}
+            positive: {x: vis.width*0.2, y: vis.height*0.6},
+            neutral: {x: vis.width*0.5, y: vis.height*0.3},
+            negative: {x: vis.width*0.8, y: vis.height*0.6}
         };
 
-        // initialize simulation:
         vis.simulation = d3.forceSimulation()
             .force('charge', d3.forceManyBody().strength(vis.charge))
             //.force("center", d3.forceCenter(nodeCenterX, vis.height / 2))
@@ -89,6 +84,8 @@ class TestGenreVis {
 
         vis.simulation.stop();
 
+        vis.baseline = 'same_mbti';
+
         vis.wrangleData();
     }
 
@@ -97,11 +94,26 @@ class TestGenreVis {
         let vis = this;
 
         vis.displayData = [];
-        vis.genreMbtiData.forEach(d => vis.displayData.push({
-            "genre": d.genre,
-            "rating": d[vis.selectedMbti[0]],
-            "rating_relative": d[vis.selectedMbti[0]] - d.average
-        }));
+        if (vis.baseline == "same_mbti"){
+            let matchingRow = vis.mbtiGenreData.find(r => r.mbti == vis.selectedMbti[0]);
+            for (let key in matchingRow) {
+                if (key !== "mbti" && key !== "average") {
+                    vis.displayData.push({
+                        "genre": key,
+                        "rating": matchingRow[key],
+                        "rating_relative": matchingRow[key] - matchingRow.average
+                    });
+                }
+            }
+        } else if (vis.baseline == "all_people") {
+            vis.genreMbtiData.forEach(d => vis.displayData.push({
+                "genre": d.genre,
+                "rating": d[vis.selectedMbti[0]],
+                "rating_relative": d[vis.selectedMbti[0]] - d.average
+            }));
+        }
+
+        console.log(vis.displayData);
 
         vis.updateVis();
     }

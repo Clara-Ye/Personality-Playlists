@@ -88,14 +88,14 @@ class TestMbtiVis {
 
         vis.simulation.stop();
 
+        vis.baseline = 'same_genres';
+
         vis.wrangleData();
     }
 
 
     wrangleData() {
         let vis = this;
-
-        vis.displayData = [];
 
         vis.selectedGenres = vis.selectedGenres.map(genre => {
             if (genre == "R&B") {return "rnb";}
@@ -105,26 +105,67 @@ class TestMbtiVis {
 
         console.log(vis.selectedGenres);
 
-        let genre1 = vis.selectedGenres[0];
-        let genre2 = vis.selectedGenres[1] || null;
-        let genre3 = vis.selectedGenres[2] || null;
-
-        vis.mbtiGenreData.forEach(d => {
-                if (vis.selectedGenres.length == 1) {
-                    d.rating = d[vis.selectedGenres[0]];
-                } else if (vis.selectedGenres.length == 2) {
-                    d.rating = d[vis.selectedGenres[0]] / 3 * 2 + d[vis.selectedGenres[1]] / 3;
-                } else {
-                    d.rating = d[vis.selectedGenres[0]] * 0.5 + d[vis.selectedGenres[1]] * 0.3  + d[vis.selectedGenres[2]] * 0.2;
+        vis.displayData = [];
+        if (vis.baseline == "same_genres") {
+            // Sorry to anyone who's reading this. I just wanted to get things to work.
+            if (vis.selectedGenres.length == 1) {
+                let matchingRow1 = vis.genreMbtiData.find(r => r.genre == vis.selectedGenres[0]);
+                for (let key in matchingRow1) {
+                    if (key !== "genre" && key !== "average") {
+                        vis.displayData.push({
+                            "mbti": key,
+                            "rating": matchingRow1[key],
+                            "rating_relative": matchingRow1[key] - matchingRow1.average
+                        });
+                    }
+                }
+            } else if (vis.selectedGenres.length == 2) {
+                let matchingRow1 = vis.genreMbtiData.find(r => r.genre == vis.selectedGenres[0]);
+                let matchingRow2 = vis.genreMbtiData.find(r => r.genre == vis.selectedGenres[1]);
+                for (let key in matchingRow1) {
+                    if (key !== "genre" && key !== "average") {
+                        let rating = matchingRow1[key] * 0.6 + matchingRow2[key] * 0.4;
+                        let average = matchingRow1.average * 0.6 + matchingRow2.average * 0.4;
+                        vis.displayData.push({
+                            "mbti": key,
+                            "rating": rating,
+                            "rating_relative": rating - average
+                        });
+                    }
+                }
+            } else if (vis.selectedGenres.length == 3) {
+                let matchingRow1 = vis.genreMbtiData.find(r => r.genre == vis.selectedGenres[0]);
+                let matchingRow2 = vis.genreMbtiData.find(r => r.genre == vis.selectedGenres[1]);
+                let matchingRow3 = vis.genreMbtiData.find(r => r.genre == vis.selectedGenres[2]);
+                for (let key in matchingRow1) {
+                    if (key !== "genre" && key !== "average") {
+                        let rating = matchingRow1[key] * 0.5 + matchingRow2[key] * 0.3 + matchingRow3[key] * 0.2;
+                        let average = matchingRow1.average * 0.5 + matchingRow2.average * 0.3 + matchingRow3.average * 0.2;
+                        vis.displayData.push({
+                            "mbti": key,
+                            "rating": rating,
+                            "rating_relative": rating - average
+                        });
+                    }
                 }
             }
-        )
-
-        vis.mbtiGenreData.forEach(d => vis.displayData.push({
-            "mbti": d.mbti,
-            "rating": d.rating,
-            "rating_relative": d.rating - d.average
-        }));
+        } else if (vis.baseline == "all_people") {
+            vis.mbtiGenreData.forEach(d => {
+                    if (vis.selectedGenres.length == 1) {
+                        d.rating = d[vis.selectedGenres[0]];
+                    } else if (vis.selectedGenres.length == 2) {
+                        d.rating = d[vis.selectedGenres[0]] * 0.6 + d[vis.selectedGenres[1]] * 0.4;
+                    } else {
+                        d.rating = d[vis.selectedGenres[0]] * 0.5 + d[vis.selectedGenres[1]] * 0.3  + d[vis.selectedGenres[2]] * 0.2;
+                    }
+                }
+            )
+            vis.mbtiGenreData.forEach(d => vis.displayData.push({
+                "mbti": d.mbti,
+                "rating": d.rating,
+                "rating_relative": d.rating - d.average
+            }));
+        }
 
         console.log(vis.displayData);
 
