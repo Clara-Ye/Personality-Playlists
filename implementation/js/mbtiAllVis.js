@@ -12,18 +12,28 @@ class mbtiAllVis {
 
 		vis.margin = { top: 40, right: 40, bottom: 40, left: 40 };
 
-		vis.imageWidth = 50;
-		vis.imageHeight = 50;
+		vis.imageWidth = 80;
+		vis.imageHeight = 80;
 
-		vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right - vis.imageWidth;
-		vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom - vis.imageHeight;
+		vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
+		vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
+
+		d3.select('#' + vis.parentElement)
+			.style('background-image', 'url("img/background.jpg")')
+			.style('background-size', `${vis.width+vis.margin.left+vis.margin.right}px ${vis.height+vis.margin.top*2+vis.margin.bottom}px`)
+			.style('background-repeat', 'no-repeat');
 
 		// Create a div for the images
 		vis.imgContainer = d3.select('#' + vis.parentElement).append('div')
 			.attr('class', 'img-container')
 			.style('position', 'relative')
-			.style('width', vis.width + 'px')
-			.style('height', vis.height + 'px');
+			.style('width', vis.width)
+			.style('height', vis.height);
+
+		vis.tooltipImages = [];
+		for (let i = 1; i <= 9; i++) {
+			vis.tooltipImages.push(`img/tooltip/tooltip_${i}.png`);
+		}
 
 		vis.wrangleData();
 	}
@@ -54,7 +64,7 @@ class mbtiAllVis {
 
 		vis.displayData.forEach((d, index) => {
 			let img = document.createElement('img');
-			img.src = `img/${d.mbti}.png`;
+			img.src = `img/MBTI/${d.mbti}.png`;
 			img.alt = d.mbti;
 			img.style.position = 'absolute';
 			img.style.cursor = 'pointer';
@@ -62,10 +72,11 @@ class mbtiAllVis {
 
 			// Attempt to find a non-overlapping random position
 			let overlap, newPos;
+			let bottomDis = 2/3;
 			do {
 				newPos = {
 					left: Math.random() * (vis.width - vis.imageWidth),
-					top: Math.random() * (vis.height - vis.imageHeight)
+					top: (vis.height*bottomDis) + Math.random() * (vis.height*(1-bottomDis) - vis.imageHeight)
 				};
 				overlap = isOverlapping(newPos, addedImages);
 			} while (overlap);
@@ -83,15 +94,41 @@ class mbtiAllVis {
 			// Tooltip setup
 			let tooltip = document.createElement('div');
 			tooltip.classList.add('mbti-tooltip');
-			tooltip.innerHTML = `<strong>${d.mbti}</strong>: ${d.personality}`;
+			tooltip.innerHTML = `<strong>${d.mbti}</strong>: <br>${d.personality}`;
+
+			// Randomly select a background image from the list
+			let randomTooltip = vis.tooltipImages[Math.floor(Math.random() * vis.tooltipImages.length)];
+			tooltip.style.backgroundImage = `url("${randomTooltip}")`;
+			tooltip.style.backgroundSize = 'cover';
+			tooltip.style.backgroundRepeat = 'no-repeat';
+			tooltip.style.border = 'none';
+			tooltip.style.backgroundColor = 'transparent';
+			tooltip.style.border = 'none';
+			tooltip.style.width = '120px';
+			tooltip.style.height = '90px';
+			tooltip.style.color = 'black';
+			tooltip.style.textShadow = '1px 1px 2px white';
+
 			vis.imgContainer.node().appendChild(tooltip);
 			tooltip.style.display = 'none';
 
 			// Event listeners for tooltip
 			img.onmouseover = () => {
 				tooltip.style.display = 'block';
-				tooltip.style.left = `${img.offsetLeft + vis.imageWidth*1.5}px`;
-				tooltip.style.top = `${img.offsetTop}px`;
+				let tooltipWidth = 120;
+				let tooltipHeight = 90;
+
+				// Calculate positions
+				let leftPosition = img.offsetLeft + (vis.imageWidth - tooltipWidth) / 2;
+				let topPosition = img.offsetTop - tooltipHeight;
+
+				// Adjust if tooltip goes outside the upper bound
+				if (topPosition < 0) {
+					topPosition = img.offsetTop + vis.imageHeight;
+				}
+
+				tooltip.style.left = `${leftPosition}px`;
+				tooltip.style.top = `${topPosition}px`;
 			};
 
 			img.onmouseout = () => {
