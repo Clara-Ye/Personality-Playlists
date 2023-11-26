@@ -22,8 +22,6 @@ class TestSelection {
             "ISTJ", "ISFJ", "ESTJ", "ESFJ",
             "ISTP", "ISFP", "ESTP", "ESFP"]
 
-        // create genre rating by mbti dataset
-
         this.mbtiTestData = this.mbtiTestData.map(row => {
             row['rating_synthwave'] = row['rating_synthwave_chillwave_vaporwave'];
             row['rating_folk'] = row['rating_indie_folk'];
@@ -32,49 +30,8 @@ class TestSelection {
             return row;
         });
 
-        this.mbtiGenreData = {};
-        this.genreListKey.forEach(genre => {
-            this.mbtiGenreData[genre] = { genre, average: 0, counts: 0 };
-            this.mbtiTestData.forEach(record => {
-                // If the genreData object is initialized, add the rating
-                this.mbtiGenreData[genre][record.mbti_type] = this.mbtiGenreData[genre][record.mbti_type] || [];
-                let rating = record[`rating_${genre}`];
-                if (rating !== null) {
-                    this.mbtiGenreData[genre][record.mbti_type].push(rating);
-                    // Update the overall average for the genre
-                    this.mbtiGenreData[genre].average += rating;
-                    this.mbtiGenreData[genre].counts += 1;
-                }
-            });
-        });
-
-        this.genreListKey.forEach(genre => {
-            let genreObj = this.mbtiGenreData[genre];
-
-            if (genreObj.average !== 0) {
-                genreObj.average /= genreObj.counts;
-                delete genreObj.counts;
-                delete genreObj.null;
-
-                Object.keys(genreObj)
-                    .filter(mbti => mbti !== "genre" && mbti !== "average")
-                    .forEach(mbti => {
-                        let ratings = genreObj[mbti];
-                        genreObj[mbti] = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-                    });
-            }
-        });
-
-        this.mbtiGenreData = this.genreListKey.map(genre => {
-            let genreObj = this.mbtiGenreData[genre];
-            return {
-                genre: genreObj.genre,
-                average: genreObj.average,
-                ...genreObj, // Spread the MBTI types and their averages
-            };
-        });
-
-        console.log(this.mbtiGenreData);
+        this.wrangleGenreMbtiData(this);
+        this.wrangleMbtiGenreData(this);
 
         this.testCompleted = false;
 
@@ -300,10 +257,10 @@ class TestSelection {
             let testVis;
             // selected genre, display MBTI rankings
             if (vis.selectedGenres.length > 0 && vis.selectedGenres.length <= 3) {
-                testVis = new TestMbtiVis("test_vis", vis.mbtiGenreData, vis.genreData, vis.selectedGenres);
+                testVis = new TestMbtiVis("test_vis", vis.genreMbtiData, vis.mbtiGenreData, vis.selectedGenres);
                 // selected MBTI, display genre rankings
             } else if (vis.selectedMbti.length == 1) {
-                testVis = new TestGenreVis("test_vis", vis.mbtiGenreData, vis.genreData, vis.selectedMbti);
+                testVis = new TestGenreVis("test_vis", vis.genreMbtiData, vis.mbtiGenreData, vis.selectedMbti);
             } else {
                 console.log("error in selection");
             }
@@ -324,4 +281,104 @@ class TestSelection {
         // TODO: some signal for no second test?
 
     }
+
+    wrangleGenreMbtiData(vis) {
+        vis.genreMbtiData = {};
+        vis.genreListKey.forEach(genre => {
+            vis.genreMbtiData[genre] = { genre, average: 0, counts: 0 };
+            vis.mbtiTestData.forEach(record => {
+                // If the genreData object is initialized, add the rating
+                vis.genreMbtiData[genre][record.mbti_type] = vis.genreMbtiData[genre][record.mbti_type] || [];
+                let rating = record[`rating_${genre}`];
+                if (rating !== null) {
+                    vis.genreMbtiData[genre][record.mbti_type].push(rating);
+                    // Update the overall average for the genre
+                    vis.genreMbtiData[genre].average += rating;
+                    vis.genreMbtiData[genre].counts += 1;
+                }
+            });
+        });
+
+        vis.genreListKey.forEach(genre => {
+            let genreObj = vis.genreMbtiData[genre];
+
+            if (genreObj.average != 0) {
+                genreObj.average /= genreObj.counts;
+                delete genreObj.counts;
+                delete genreObj.null;
+
+                Object.keys(genreObj)
+                    .filter(mbti => mbti !== "genre" && mbti !== "average")
+                    .forEach(mbti => {
+                        let ratings = genreObj[mbti];
+                        genreObj[mbti] = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+                    });
+            }
+        });
+
+        vis.genreMbtiData = vis.genreListKey.map(genre => {
+            let genreObj = vis.genreMbtiData[genre];
+            return {
+                genre: genreObj.genre,
+                average: genreObj.average,
+                ...genreObj, // Spread the MBTI types and their averages
+            };
+        });
+
+        console.log(vis.genreMbtiData);
+    }
+
+    wrangleMbtiGenreData(vis) {
+        vis.mbtiGenreData = {};
+
+        vis.mbtiList.forEach(mbti => {
+            vis.mbtiGenreData[mbti] = { mbti, average: 0, counts: 0 };
+        });
+
+        console.log(vis.mbtiGenreData);
+
+        vis.mbtiTestData.forEach(record => {
+            let mbti = record.mbti_type;
+            if (mbti != null) {
+                for (let [key, value] of Object.entries(record)) {
+                    if (key.substring(0,6) == "rating") {
+                        vis.mbtiGenreData[mbti][key.substring(7)] = vis.mbtiGenreData[mbti][key.substring(7)] || [];
+                        if (value != null) {
+                            vis.mbtiGenreData[mbti][key.substring(7)].push(value);
+                            vis.mbtiGenreData[mbti].average += value;
+                            vis.mbtiGenreData[mbti].counts += 1;
+                        }
+                    }
+                }
+            }
+        });
+
+        vis.mbtiList.forEach(mbti => {
+            let mbtiObj = vis.mbtiGenreData[mbti];
+
+            if (mbtiObj.average != 0) {
+                mbtiObj.average /= mbtiObj.counts;
+                delete mbtiObj.counts;
+
+                Object.keys(mbtiObj)
+                    .filter(genre => genre !== "mbti" && genre !== "average")
+                    .forEach(genre => {
+                        let ratings = mbtiObj[genre];
+                        mbtiObj[genre] = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+                    });
+            }
+        });
+
+        vis.mbtiGenreData = vis.mbtiList.map(mbti => {
+            let mbtiObj = vis.mbtiGenreData[mbti];
+            return {
+                mbti: mbtiObj.mbti,
+                average: mbtiObj.average,
+                ...mbtiObj,
+            };
+        });
+
+        console.log(vis.mbtiGenreData);
+    }
+
 }

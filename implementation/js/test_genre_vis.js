@@ -1,9 +1,9 @@
 
 class TestGenreVis {
-    constructor(_parentElement, _mbtiTestData, _genreData, _selectedMbti) {
+    constructor(_parentElement, _genreMbtiData, _mbtiGenreData, _selectedMbti) {
         this.parentElement = _parentElement;
-        this.mbtiTestData = _mbtiTestData;
-        this.genreData = _genreData;
+        this.genreMbtiData = _genreMbtiData;
+        this.mbtiGenreData = _mbtiGenreData;
         this.selectedMbti = _selectedMbti;
 
         this.initVis();
@@ -82,8 +82,8 @@ class TestGenreVis {
         }
 
         function nodeCenterY(d) {
-            if (d.rating_relative >= 0.1) { return vis.centers['positive'].y; }
-            else if (d.rating_relative <= -0.1) { return vis.centers['negative'].y; }
+            if (d.rating_relative > 0.1) { return vis.centers['positive'].y; }
+            else if (d.rating_relative < -0.1) { return vis.centers['negative'].y; }
             else { return vis.centers['neutral'].y; }
         }
 
@@ -97,7 +97,7 @@ class TestGenreVis {
         let vis = this;
 
         vis.displayData = [];
-        vis.mbtiTestData.forEach(d => vis.displayData.push({
+        vis.genreMbtiData.forEach(d => vis.displayData.push({
             "genre": d.genre,
             "rating": d[vis.selectedMbti[0]],
             "rating_relative": d[vis.selectedMbti[0]] - d.average
