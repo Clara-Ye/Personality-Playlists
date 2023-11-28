@@ -102,7 +102,6 @@ body, html {
 	text-align: center;
 }
 
-
 .personalityClass {
 	color: #98a6a9;
 	font-size: 20px;
@@ -127,8 +126,21 @@ body, html {
 	fill: #747db4;
 }
 
+/*MBTI MAP*/
+.mbti-type-select {
+	border: none;
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	padding: 10px 20px;
+	text-align: center;
+	text-align-last: center;
+	line-height: 1.5em;
+}
 
-/*MUSIC MBTI DISTRIBUTION*/
+
+/*MBTI MUSIC DISTRIBUTION*/
 .music-type-select {
 	border: none;
 	outline: none;
