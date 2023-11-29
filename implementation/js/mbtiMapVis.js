@@ -49,27 +49,18 @@ class mbtiMapVis {
             .text(d => d)
             .attr("value", d => d);
 
-        vis.mbtiTypeSelect.on("change", function() {
-            vis.selectedMBTIType = d3.select(this).property("value");
-            vis.mbtiTypeSelect.property("value", vis.selectedMBTIType);
-            vis.wrangleData();
-        });
-
-        // Set the initial selected music type
-        vis.selectedMBTIType = vis.uniqueGenres[0];
-
         // Append SVG to the main container
         vis.svg = vis.mainContainer.append("svg")
 
         //adjust the scale by zoom factor
         let zoomFactor = vis.height / 600;
         let defaultScale = 230;
-        let mapPosition = 0.6;
+        vis.mapPosition = 0.6;
         vis.projection = d3
             .geoOrthographic()
             // .geoStereographic()
             .clipAngle(90)
-            .translate([vis.width * mapPosition, vis.height / 2])
+            .translate([vis.width * vis.mapPosition, vis.height / 2])
             .scale(defaultScale * zoomFactor);
 
         vis.path = d3.geoPath()
@@ -78,7 +69,7 @@ class mbtiMapVis {
         // append tooltip
         vis.tooltip = vis.mainContainer.append('div')
             // .attr('class', "tooltip")
-            .attr('id', 'mapTooltip')
+            .attr('id', 'map-tooltip')
             .style("opacity", 0);
 
         // hand sketch style texture
@@ -109,15 +100,26 @@ class mbtiMapVis {
         vis.numSegments = 10;
         vis.legend = vis.svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${vis.width * mapPosition - vis.legendWidth/2}, ${vis.height - 60})`);
+            .attr("transform", `translate(${vis.width * vis.mapPosition - vis.legendWidth/2}, ${vis.height - 60})`);
 
         vis.countriesGroup = vis.svg.append("g")
             .attr("class", "countries");
 
+        vis.wrangleData();
+
         window.addEventListener('resize', () => vis.handleResize());
 
-        vis.wrangleData();
+        // Set the initial selected music type
+        vis.selectedMBTIType = vis.uniqueGenres[0];
+        vis.onSelectionChange();
+
+        vis.mbtiTypeSelect.on("change", function() {
+            vis.onSelectionChange();
+        });
+
         vis.handleResize();
+
+
     }
 
     handleResize() {
@@ -127,22 +129,24 @@ class mbtiMapVis {
         vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
-        // Update the SVG dimensions
-        vis.svg.attr("width", vis.width)
-            .attr("height", vis.height)
-
         //adjust the scale by zoom factor
         let zoomFactor = vis.height / 600;
         let defaultScale = 230;
-        let mapPosition = 0.6;
+
         vis.projection
-            .translate([vis.width * mapPosition, vis.height / 2])
+            .translate([vis.width * vis.mapPosition, vis.height / 2])
             .scale(defaultScale * zoomFactor);
+
+        let globeRadius = vis.projection.scale();
+
+        // Update the SVG dimensions
+        vis.svg.attr("width", vis.width * vis.mapPosition + globeRadius)
+            .attr("height", vis.height)
 
         vis.path.projection(vis.projection);
         vis.countriesGroup.selectAll(".country").attr("d", vis.path);
         vis.sphere.attr("d", vis.path);
-        vis.legend.attr("transform", `translate(${vis.width * mapPosition - vis.legendWidth/2}, ${vis.height - 30})`);
+        vis.legend.attr("transform", `translate(${vis.width * vis.mapPosition - vis.legendWidth/2}, ${vis.height - 30})`);
 
         vis.updateVis();
     }
@@ -155,8 +159,6 @@ class mbtiMapVis {
 
         let mbtiTypesAT = ["ESTJ-A", "ESFJ-A", "INFP-T", "ESFJ-T", "ENFP-T", "ENFP-A", "ESTJ-T", "ISFJ-T", "ENFJ-A", "ESTP-A", "ISTJ-A", "INTP-T", "INFJ-T", "ISFP-T", "ENTJ-A", "ESTP-T", "ISTJ-T", "ESFP-T", "ENTP-A", "ESFP-A", "INTJ-T", "ISFJ-A", "INTP-A", "ENTP-T", "ISTP-T", "ENTJ-T", "ISTP-A", "INFP-A", "ENFJ-T", "INTJ-A", "ISFP-A", "INFJ-A"];
         let mbtiTypes = ["ESTJ", "ESFJ", "INFP", "ESFJ", "ENFP", "ENFP", "ESTJ", "ISFJ", "ENFJ", "ESTP", "ISTJ", "INTP", "INFJ", "ISFP", "ENTJ", "ESTP", "ISTJ", "ESFP", "ENTP", "ESFP", "INTJ", "ISFJ", "INTP", "ENTP", "ISTP", "ENTJ", "ISTP", "INFP", "ENFJ", "INTJ", "ISFP", "INFJ"];
-
-
 
         vis.geoData.objects.countries.geometries.forEach(d => {
             let mbtiDataWithZeros = {};
@@ -186,38 +188,82 @@ class mbtiMapVis {
             }
         });
 
-        // Determine the max and min values for the selected MBTI type
-        let mbtiValues = Object.values(vis.countryInfo).map(country => country.mbtiData[vis.selectedMBTIType]);
-        let mbtiNonZeroValues = mbtiValues.filter(value => value > 0); // Filter out zero values
+        // Convert TopoJSON to GeoJSON (target object = 'states')
+        vis.world = topojson.feature(vis.geoData, vis.geoData.objects.countries).features;
 
-        vis.maxValue = mbtiNonZeroValues.length > 0 ? Math.max(...mbtiNonZeroValues) : 0;
-        vis.minValue = mbtiNonZeroValues.length > 0 ? Math.min(...mbtiNonZeroValues) : 0;
+        vis.colorScaleList = {};
+        vis.uniqueGenres.forEach(type => {
+            // Calculate values for current type
+            let mbtiValues = Object.values(vis.countryInfo).map(country => country.mbtiData[type]);
+            let mbtiNonZeroValues = mbtiValues.filter(value => value > 0);
 
-        vis.colorScale = d3.scaleLinear()
-            .domain([vis.minValue, vis.maxValue])
-            .range(['rgba(85,217,229,0.66)', 'rgba(24,27,178,0.73)']);
+            let maxValue = mbtiNonZeroValues.length > 0 ? Math.max(...mbtiNonZeroValues) : 0;
+            let minValue = mbtiNonZeroValues.length > 0 ? Math.min(...mbtiNonZeroValues) : 0;
+
+            // Create and store color scale for current type
+            vis.colorScaleList[type] = d3.scaleLinear()
+                .domain([minValue, maxValue])
+                .range(['rgba(85,217,229,0.66)', 'rgba(24,27,178,0.73)']);
+        });
+
+        vis.selectedMBTIType = vis.uniqueGenres[0];
+        vis.updateVis();
+    }
+
+    onSelectionChange(){
+        let vis = this;
+        vis.selectedMBTIType = d3.select(vis.mbtiTypeSelect.node()).property("value");
+
+        vis.colorScale = vis.colorScaleList[vis.selectedMBTIType];
 
         Object.keys(vis.countryInfo).forEach(countryKey => {
-            const countryData = vis.countryInfo[countryKey].mbtiData;
-            const allZeros = Object.values(countryData).every(value => value === 0);
-
+            let countryData = vis.countryInfo[countryKey].mbtiData;
+            let allZeros = Object.values(countryData).every(value => value === 0);
+            let tooltipHtml;
             // If all values are zero, set color to grey, otherwise use the color scale
             if (allZeros) {
                 vis.countryInfo[countryKey].color = "rgba(86,86,86,0.4)";
+                tooltipHtml = `
+                <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
+                    <strong><p>${countryKey}</p></strong>
+                    <p>No Data</p>
+                </div>`;
             } else {
                 let mbtiValue = countryData[vis.selectedMBTIType];
                 vis.countryInfo[countryKey].color = vis.colorScale(mbtiValue);
-            }
-        });
 
-        // Convert TopoJSON to GeoJSON (target object = 'states')
-        vis.world = topojson.feature(vis.geoData, vis.geoData.objects.countries).features;
+                let maxType = null, minType = null, maxValue = -Infinity, minValue = Infinity;
+                Object.entries(countryData).forEach(([type, value]) => {
+                    if (value > maxValue) {
+                        maxValue = value;
+                        maxType = type;
+                    }
+                    if (value < minValue) {
+                        minValue = value;
+                        minType = type;
+                    }
+                });
+
+                maxValue = (maxValue * 100).toFixed(2);
+                minValue = (minValue * 100).toFixed(2);
+
+                tooltipHtml = `
+                <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
+                    <strong><p>${countryKey}</p></strong>
+                    <p>${maxType} (most): ${maxValue}%</p>
+                    <p>${minType} (least): ${minValue}%</p>
+                </div>`;
+            }
+            vis.countryInfo[countryKey].tooltipHtml = tooltipHtml;
+        });
 
         vis.updateVis();
     }
 
     updateVis() {
         let vis = this;
+
+        vis.colorScale = vis.colorScaleList[vis.selectedMBTIType];
 
         //draw countries
         vis.countries = vis.countriesGroup
@@ -241,10 +287,9 @@ class mbtiMapVis {
         vis.countriesEnter
             .merge(vis.countries)
             .transition()
-            .duration(500)
+            .duration(100)
             .style("fill", d => {
-                const countryName = d.properties.name;
-                const countryInfo = vis.countryInfo[countryName];
+                let countryInfo = vis.countryInfo[d.properties.name];
                 return countryInfo.color;
             });
 
@@ -255,51 +300,14 @@ class mbtiMapVis {
                     .attr('stroke', 'black')
                     .attr('fill', 'rgba(173,222,255,0.62)');
 
-                let countryMBTIData = vis.countryInfo[d.properties.name].mbtiData;
-                let allZeros = Object.values(countryMBTIData).every(value => value === 0);
-
-                let tooltipHtml;
-
-                if (allZeros) {
-                    // Tooltip for countries with no MBTI data
-                    tooltipHtml = `
-                    <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
-                        <strong><p>${d.properties.name}</p></strong>
-                        <p>No Data</p>
-                    </div>`;
-                } else {
-                    // Find the MBTI types with the highest and lowest values
-                    let maxType = null, minType = null, maxValue = -Infinity, minValue = Infinity;
-                    Object.entries(countryMBTIData).forEach(([type, value]) => {
-                        if (value > maxValue) {
-                            maxValue = value;
-                            maxType = type;
-                        }
-                        if (value < minValue) {
-                            minValue = value;
-                            minType = type;
-                        }
-                    });
-
-                    maxValue = (maxValue * 100).toFixed(2);
-                    minValue = (minValue * 100).toFixed(2);
-
-                    // Tooltip for countries with MBTI data
-                    tooltipHtml = `
-                    <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
-                        <strong><p>${d.properties.name}</p></strong>
-                        <p>Most MBTI: ${maxType} : ${maxValue}%</p>
-                        <p>Least MBTI: ${minType} : ${minValue}%</p>
-                    </div>`;
-                }
-
-
-
                 vis.tooltip
                     .style("opacity", 1)
-                    .html(tooltipHtml)
-                    .style("left", (event.pageX) + "px")
-                    .style("top", (event.pageY + 60) + "px");
+                    .style("background-image", `url('img/tooltip/tooltip_8.png')`)
+                    .style("background-color", "transparent")
+                    .style("border", "none")
+                    .html(vis.countryInfo[d.properties.name].tooltipHtml)
+                    .style("left", `${event.pageX}px`)
+                    .style("top", `${event.pageY}px`);
             })
             .on('mouseout', function (event, d) {
                 d3.select(this)
@@ -340,13 +348,17 @@ class mbtiMapVis {
         )
 
         //draw legend
-        const legendScale = d3.scaleLinear()
+        let legendScale = d3.scaleLinear()
             .domain(vis.colorScale.domain())
             .range([0, vis.legendWidth]);
 
-        const legendAxis = d3.axisBottom(legendScale)
+        let left = vis.colorScale.domain()[0];
+        let right = vis.colorScale.domain()[1];
+        let middle = (left + right) / 2;
+        console.log(left, middle, right)
+        let legendAxis = d3.axisBottom(legendScale)
             .ticks(3)
-            .tickValues([vis.minValue, (vis.maxValue+vis.minValue)/2 ,vis.maxValue])
+            .tickValues([left,middle, right])
             .tickFormat(d => `${(d * 100).toFixed(2)}%`);
 
         // Append the legend axis
@@ -355,9 +367,9 @@ class mbtiMapVis {
             .style("font-size", "15px");
 
         // Create legend segments
-        const legendData = d3.range(vis.numSegments).map(i => {
-            const [min, max] = vis.colorScale.domain();
-            const step = (max - min) / vis.numSegments;
+        let legendData = d3.range(vis.numSegments).map(i => {
+            let [min, max] = vis.colorScale.domain();
+            let step = (max - min) / vis.numSegments;
             return min + i * step;
         });
 

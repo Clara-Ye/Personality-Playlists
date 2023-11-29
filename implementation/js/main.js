@@ -25,8 +25,8 @@ function createVis(data) {
     let mbtiMapData = data[3]
 
     // mbtiAll = new mbtiAllVis("mbtiAll", mbtiData);
-    // mbtiDetail = new mbtiDetailVis("mbtiDetail", mbtiData);
-    // mbtiMusicDistribution = new mbtiMusicDistributionVis("mbtiMusicDistribution", mbtiData, musicData);
+    mbtiDetail = new mbtiDetailVis("mbtiDetail", mbtiData);
+    mbtiMusicDistribution = new mbtiMusicDistributionVis("mbtiMusicDistribution", mbtiData, musicData);
     mbtiMap = new mbtiMapVis("mbtiMap", mbtiData, geoData, mbtiMapData);
 
 }

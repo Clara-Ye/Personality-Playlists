@@ -31,11 +31,27 @@ class mbtiAllVis {
 			.style('height', vis.height);
 
 		vis.tooltipImages = [];
-		for (let i = 1; i <= 9; i++) {
+		for (let i = 1; i <= 7; i++) {
 			vis.tooltipImages.push(`img/tooltip/tooltip_${i}.png`);
 		}
 
+		window.addEventListener('resize', () => vis.handleResize());
+
 		vis.wrangleData();
+		vis.handleResize();
+	}
+
+	handleResize() {
+		let vis = this;
+
+		// Update width and height based on the new window size
+		vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
+		vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
+
+		vis.imgContainer.style('width', vis.width).style('height', vis.height);
+
+
+		vis.updateVis();
 	}
 
 	wrangleData() {
@@ -49,7 +65,7 @@ class mbtiAllVis {
 
 	updateVis() {
 		let vis = this;
-
+		vis.imgContainer.selectAll('*').remove();
 		// Helper function to check overlap
 		function isOverlapping(newImgPos, addedImages) {
 			return addedImages.some(imgPos => {
@@ -99,18 +115,8 @@ class mbtiAllVis {
 			// Randomly select a background image from the list
 			let randomTooltip = vis.tooltipImages[Math.floor(Math.random() * vis.tooltipImages.length)];
 			tooltip.style.backgroundImage = `url("${randomTooltip}")`;
-			tooltip.style.backgroundSize = 'cover';
-			tooltip.style.backgroundRepeat = 'no-repeat';
-			tooltip.style.border = 'none';
-			tooltip.style.backgroundColor = 'transparent';
-			tooltip.style.border = 'none';
-			tooltip.style.width = '120px';
-			tooltip.style.height = '90px';
-			tooltip.style.color = 'black';
-			tooltip.style.textShadow = '1px 1px 2px white';
 
 			vis.imgContainer.node().appendChild(tooltip);
-			tooltip.style.display = 'none';
 
 			// Event listeners for tooltip
 			img.onmouseover = () => {
@@ -122,7 +128,6 @@ class mbtiAllVis {
 				let leftPosition = img.offsetLeft + (vis.imageWidth - tooltipWidth) / 2;
 				let topPosition = img.offsetTop - tooltipHeight;
 
-				// Adjust if tooltip goes outside the upper bound
 				if (topPosition < 0) {
 					topPosition = img.offsetTop + vis.imageHeight;
 				}

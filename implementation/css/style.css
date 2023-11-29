@@ -24,11 +24,17 @@ body, html {
 .mbti-tooltip {
 	display: none;
 	position: absolute;
-	background-color: white;
-	border: 1px solid #ccc;
 	padding: 10px;
 	z-index: 100;
 	text-align: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	border: none;
+	background-color: transparent;
+	width: 120px;
+	height: 90px;
+	color: black;
+	text-shadow: 1px 1px 2px white;
 }
 
 .mbti-img {
@@ -138,7 +144,21 @@ body, html {
 	text-align-last: center;
 	line-height: 1.5em;
 }
+#map-tooltip{
+	border: none;
+	background-color: transparent;
+	position: absolute;
+	padding: 5px;
+	z-index: 100;
+	text-align: center;
+	background-size: cover;
+	background-repeat: no-repeat;
 
+	width: 240px;
+	height: 180px;
+	color: black;
+	text-shadow: 1px 1px 2px white;
+}
 
 /*MBTI MUSIC DISTRIBUTION*/
 .music-type-select {
