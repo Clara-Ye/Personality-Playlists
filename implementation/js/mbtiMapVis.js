@@ -28,9 +28,12 @@ class mbtiMapVis {
             .style("margin-left", "10%")
             .style("background", `url('img/sketch/rect_5.png')`)
             .style("background-size", "100% 100%")
-            .style("width", "20%")
+            .style("width", "10%")
             .style("height", "50px")
             .style("padding", "5px");
+
+        // Extract unique genres
+        vis.uniqueGenres = ["ENFJ", "ENFP", "ENTJ", "ENTP", "ESFJ", "ESFP", "ESTJ", "ESTP", "INFJ", "INFP", "INTJ", "INTP", "ISFJ", "ISFP", "ISTJ", "ISTP"];
 
         vis.mbtiTypeSelect = selectContainer
             .append("select")
@@ -39,15 +42,58 @@ class mbtiMapVis {
             .style("background-color", "transparent")
             .style("color", "black");
 
-        // Extract unique genres
-        vis.uniqueGenres = ["ENFJ", "ENFP", "ENTJ", "ENTP", "ESFJ", "ESFP", "ESTJ", "ESTP", "INFJ", "INFP", "INTJ", "INTP", "ISFJ", "ISFP", "ISTJ", "ISTP"];
-
         vis.mbtiTypeSelect.selectAll("option")
             .data(vis.uniqueGenres)
             .enter()
             .append("option")
             .text(d => d)
-            .attr("value", d => d);
+            .attr("value", d => d)
+            .attr("class", d => mapMBTIToClass(d));
+        function mapMBTIToClass(mbtiType) {
+            switch (mbtiType) {
+                case "ENTJ": case "ENTP": case "INTJ": case "INTP":
+                    return "personality-color-analysts";
+                case "ENFJ": case "ENFP": case "INFJ": case "INFP":
+                    return "personality-color-diplomats";
+                case "ESTJ": case "ESFJ": case "ISTJ": case "ISFJ":
+                    return "personality-color-sentinels";
+                case "ISTP": case "ESTP": case "ESFP": case "ISFP":
+                    return "personality-color-explorers";
+            }
+        }
+
+        vis.mapColorToClass = function (mbtiType) {
+            switch (mbtiType) {
+                case "ENTJ": case "ENTP": case "INTJ": case "INTP":
+                    return ['rgba(224,156,202,0.66)', 'rgba(86,24,178,0.73)'];
+                case "ENFJ": case "ENFP": case "INFJ": case "INFP":
+                    return ['rgba(220,236,151,0.66)', 'rgba(4,222,143,0.73)'];
+                case "ESTJ": case "ESFJ": case "ISTJ": case "ISFJ":
+                    return ['rgba(171,224,202,0.66)', 'rgba(2,127,253,0.73)'];
+                case "ISTP": case "ESTP": case "ESFP": case "ISFP":
+                    return ['rgba(238,198,145,0.66)', 'rgba(255,98,0,0.73)'];
+            }
+        }
+
+        vis.textSvg = vis.mainContainer.append("svg")
+            .attr("width", "30%")
+            .attr("height", vis.height)
+            .attr("margin-top", 50)
+            .attr("margin-left", 50)
+
+        vis.foreignObject = vis.textSvg.append("foreignObject")
+            .attr("width", "50%")
+            .attr("height", vis.height)
+            .attr("x", "30%")
+            .attr("y", "30%");
+
+        // mbti image container
+        vis.imageContainer = d3.select("#" + vis.parentElement).select(".map-image-container");
+
+        vis.imageContainer = vis.mainContainer.append("div")
+                .attr("class", "map-image-container")
+                .style("margin-left", 0)
+                .style("text-align", "center");
 
         // Append SVG to the main container
         vis.svg = vis.mainContainer.append("svg")
@@ -55,7 +101,7 @@ class mbtiMapVis {
         //adjust the scale by zoom factor
         let zoomFactor = vis.height / 600;
         let defaultScale = 230;
-        vis.mapPosition = 0.6;
+        vis.mapPosition = 0.2;
         vis.projection = d3
             .geoOrthographic()
             // .geoStereographic()
@@ -107,19 +153,16 @@ class mbtiMapVis {
 
         vis.wrangleData();
 
-        window.addEventListener('resize', () => vis.handleResize());
-
         // Set the initial selected music type
         vis.selectedMBTIType = vis.uniqueGenres[0];
         vis.onSelectionChange();
-
-        vis.mbtiTypeSelect.on("change", function() {
-            vis.onSelectionChange();
-        });
-
         vis.handleResize();
 
 
+        window.addEventListener('resize', () => vis.handleResize());
+        vis.mbtiTypeSelect.on("change", function() {
+            vis.onSelectionChange();
+        });
     }
 
     handleResize() {
@@ -203,16 +246,37 @@ class mbtiMapVis {
             // Create and store color scale for current type
             vis.colorScaleList[type] = d3.scaleLinear()
                 .domain([minValue, maxValue])
-                .range(['rgba(85,217,229,0.66)', 'rgba(24,27,178,0.73)']);
+                .range(vis.mapColorToClass(type));
+        });
+
+        vis.highestCountryByMbtiType = {};
+        // Iterate over each MBTI type
+        vis.uniqueGenres.forEach(mbtiType => {
+            let highestValue = -Infinity;
+            let highCountry = "";
+            Object.entries(vis.countryInfo).forEach(([country, data]) => {
+                let mbtiValue = data.mbtiData[mbtiType];
+                if (mbtiValue > highestValue) {
+                    highestValue = mbtiValue;
+                    highCountry = country;
+                }
+            });
+            vis.highestCountryByMbtiType[mbtiType] = highCountry;
         });
 
         vis.selectedMBTIType = vis.uniqueGenres[0];
-        vis.updateVis();
     }
 
     onSelectionChange(){
         let vis = this;
         vis.selectedMBTIType = d3.select(vis.mbtiTypeSelect.node()).property("value");
+
+        vis.imageContainer.selectAll("img").remove();
+
+        vis.imageContainer.append("img")
+            .attr("src", `img/MBTI/${vis.selectedMBTIType}.png`)
+            .style("width", "300px")
+            .style("height", "auto");
 
         vis.colorScale = vis.colorScaleList[vis.selectedMBTIType];
 
@@ -224,7 +288,7 @@ class mbtiMapVis {
             if (allZeros) {
                 vis.countryInfo[countryKey].color = "rgba(86,86,86,0.4)";
                 tooltipHtml = `
-                <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
+                <div>
                     <strong><p>${countryKey}</p></strong>
                     <p>No Data</p>
                 </div>`;
@@ -248,7 +312,7 @@ class mbtiMapVis {
                 minValue = (minValue * 100).toFixed(2);
 
                 tooltipHtml = `
-                <div style="border: thin solid grey; border-radius: 5px; background: lightgrey; padding: 20px">
+                <div>
                     <strong><p>${countryKey}</p></strong>
                     <p>${maxType} (most): ${maxValue}%</p>
                     <p>${minType} (least): ${minValue}%</p>
@@ -264,6 +328,19 @@ class mbtiMapVis {
         let vis = this;
 
         vis.colorScale = vis.colorScaleList[vis.selectedMBTIType];
+
+        vis.highCountry = vis.highestCountryByMbtiType[vis.selectedMBTIType];
+
+        vis.fontColor = vis.mapColorToClass(vis.selectedMBTIType)[1];
+        vis.foreignObject.selectAll('*').remove();
+        vis.foreignObject.append("xhtml:div")
+            .html(`
+                <div style="text-align: center">
+                    <h3 style="color: ${vis.fontColor}">${vis.highCountry}</h3>
+                    <span> has the <strong style="color: ${vis.fontColor}">LARGEST</strong> percentage of</span>
+                    <p> 👇 personality type</p>
+                </div>
+            `);
 
         //draw countries
         vis.countries = vis.countriesGroup
@@ -303,11 +380,9 @@ class mbtiMapVis {
                 vis.tooltip
                     .style("opacity", 1)
                     .style("background-image", `url('img/tooltip/tooltip_8.png')`)
-                    .style("background-color", "transparent")
-                    .style("border", "none")
                     .html(vis.countryInfo[d.properties.name].tooltipHtml)
-                    .style("left", `${event.pageX}px`)
-                    .style("top", `${event.pageY}px`);
+                    .style("left", `${event.pageX+10}px`)
+                    .style("top", `${event.pageY+10}px`);
             })
             .on('mouseout', function (event, d) {
                 d3.select(this)
@@ -320,6 +395,9 @@ class mbtiMapVis {
 
                 vis.tooltip
                     .style("opacity", 0)
+                    .style("background-color", "transparent")
+
+
                     .html("");
             });
 
@@ -355,7 +433,7 @@ class mbtiMapVis {
         let left = vis.colorScale.domain()[0];
         let right = vis.colorScale.domain()[1];
         let middle = (left + right) / 2;
-        console.log(left, middle, right)
+
         let legendAxis = d3.axisBottom(legendScale)
             .ticks(3)
             .tickValues([left,middle, right])
@@ -373,10 +451,14 @@ class mbtiMapVis {
             return min + i * step;
         });
 
-        vis.legend.selectAll(".legend-rect")
-            .data(legendData)
-            .enter()
+        let legendRects = vis.legend.selectAll(".legend-rect")
+            .data(legendData);
+
+        legendRects.exit().remove();
+
+        legendRects.enter()
             .append("rect")
+            .merge(legendRects)  // Enter + Update existing elements
             .attr("class", "legend-rect")
             .attr("x", d => legendScale(d))
             .attr("y", -vis.legendHeight)

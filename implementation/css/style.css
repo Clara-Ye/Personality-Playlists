@@ -39,8 +39,6 @@ body, html {
 
 .mbti-img {
 	position: absolute;
-	width: 100px;
-	height: 100px;
 }
 
 /*MBTI DETAIL*/
@@ -70,8 +68,8 @@ body, html {
 .button-container {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 20px;
-	width: 40%;
+	gap: 50px;
+	width: 35%;
 	padding: 10px;
 	align-items: center;
 }
@@ -102,34 +100,39 @@ body, html {
 .mbti-info h3{
 	position: absolute;
 	top: 40%;
-	left: 50%;
+	left: 65%;
 	margin: 0;
 	font-size: 2vw;
 	text-align: center;
 }
 
 .personalityClass {
-	color: #98a6a9;
+	color: #737373;
 	font-size: 20px;
 }
 .personality-color-sentinels {
-	color: #8fdee1;
-	fill: #8fdee1;
+	color: #0ec2c7;
+	fill: #0ec2c7;
 }
 
 .personality-color-explorers {
-	color: #f3dc50;
-	fill: #f3dc50;
+	color: #d0ba22;
+	fill: #d0ba22;
 }
 
 .personality-color-diplomats {
-	color: #74b48c;
-	fill: #74b48c;
+	color: #369d60;
+	fill: #369d60;
 }
 
 .personality-color-analysts {
-	color: #747db4;
-	fill: #747db4;
+	color: #3d4dbb;
+	fill: #3d4dbb;
+}
+
+.mbti-letter-button-hover {
+	transform: scale(1.2);
+	transition: transform 0.3s;
 }
 
 /*MBTI MAP*/
@@ -148,12 +151,11 @@ body, html {
 	border: none;
 	background-color: transparent;
 	position: absolute;
-	padding: 5px;
+	padding-top: 50px;
 	z-index: 100;
 	text-align: center;
 	background-size: cover;
 	background-repeat: no-repeat;
-
 	width: 240px;
 	height: 180px;
 	color: black;
