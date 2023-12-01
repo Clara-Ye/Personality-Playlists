@@ -75,7 +75,7 @@ class TestSelection {
             .attr("id", "genre-icon-container")
             .append("img")
             .attr("src", "img/random/music_icon.svg")
-            .style("width", "45%");
+            .style("width", "40%");
 
         vis.mbtiInstruction = vis.mbtiTestCol.append("div")
             .attr("class", "row")
@@ -89,7 +89,16 @@ class TestSelection {
             .attr("id", "mbti-icon-container")
             .append("img")
             .attr("src", "img/random/mbti_icon.svg")
-            .style("width", "45%");
+            .style("width", "40%");
+
+        vis.testRow.append("text")
+            .text("OR")
+            .style("left", `${vis.width/2-12}px`)
+            .style("top", `${40}px`)
+            .style("font-size", `x-large`)
+            .style("text-align", "center")
+            .style("position", "absolute")
+            .style("width", `50px`);
 
         // add selection buttons
 
