@@ -17,20 +17,25 @@ class mbtiDetailVis {
         vis.mbtiFullNames = {
             'E': 'Extroverted',
             'I': 'Introverted',
-            'S': 'Sensing',
-            'N': 'Intuition',
+            'S': 'Intuitive',
+            'N': 'Observant',
             'T': 'Thinking',
             'F': 'Feeling',
             'J': 'Judging',
             'P': 'Perceiving'
         };
 
-        vis.mbtiClass = {
-            Sentinels: 'Sentinels',
-            Explorers: 'Explorers',
-            Diplomats: 'Diplomats',
-            Analysts: 'Analysts'
-        }
+        vis.mbtiDescriptions = {
+            'E': 'Extroverted means 👉 Outgoing, Sociable, Energetic, Expressive, Assertive',
+            'I': 'Introverted means 👉 Reflective, Reserved, Thoughtful, Quiet, Contemplative',
+            'S': 'Intuitive means 👉 Practical, Detail-oriented, Observant, Realistic, Concrete',
+            'N': 'Observant means 👉 Abstract, Imaginative, Conceptual, Theoretical, Visionary',
+            'T': 'Thinking means 👉 Logical, Analytical, Objective, Rational, Critical',
+            'F': 'Feeling means 👉 Empathetic, Sensitive, Caring, Compassionate, Intuitive',
+            'J': 'Judging means 👉 Structured, Organized, Decisive, Planned, Methodical',
+            'P': 'Perceiving means 👉 Spontaneous, Flexible, Adaptable, Open-minded, Curious'
+        };
+
 
         vis.mbtiPairs = {
             'E': 'I', 'I': 'E',
@@ -39,27 +44,73 @@ class mbtiDetailVis {
             'J': 'P', 'P': 'J'
         };
         vis.order = ['E', 'I', 'N', 'S', 'T', 'F', 'J', 'P'];
+        vis.leftGroup = ['E', 'N', 'T', 'J'];
+        vis.rightGroup = ['I', 'S', 'F', 'P'];
+
         vis.buttonContainer = d3.select('#' + vis.parentElement).append('div')
             .attr('class', 'button-container');
+        vis.buttonContainer.append('p')
+            .attr('class', 'mbti-description-left')
+            .style("height", "80px")
+            .text('👀 TRY hover over a button!!');
+        vis.buttonContainer.append('p')
+            .attr('class', 'mbti-description-right')
+            .style("height", "80px")
+            .text('🤚 SELECT one from each row!!');
 
-        vis.mbtiLetters.forEach(letter => {
-            let fullName = vis.mbtiFullNames[letter];
-            // let buttonText = `<strong>${letter}</strong>${fullName.slice(1)}`;
-            let buttonText = `${fullName}`;
+        vis.mbtiLetters.forEach (letter=> {
+            let buttonText = vis.mbtiFullNames[letter];
 
             let randomIndex = Math.floor(Math.random() * 8);
             let imageUrl = `img/sketch/rect_${randomIndex + 1}.png`;
             console.log(imageUrl);
 
-            vis.buttonContainer.append('button')
+            let button = vis.buttonContainer.append('button')
                 .attr('class', 'mbti-letter-button')
                 .attr('id', `button-${letter}`)
                 .html(buttonText)
                 .style('background', `url('${imageUrl}') no-repeat center center`)
                 .style("background-size", "100% 100%")
                 .on('click', function() { vis.letterClicked(letter); })
-            // .on('click', function() { console.log(`Button ${letter} clicked`); });
+
+            button.on('mouseover', function() {
+                vis.hoverEffect(letter, true);
+
+                if (vis.leftGroup.includes(letter)) {
+                    vis.buttonContainer.select('.mbti-description-left')
+                        .text(vis.mbtiDescriptions[letter]);
+                    vis.buttonContainer.select('.mbti-description-right')
+                        .text(vis.mbtiDescriptions[vis.mbtiPairs[letter]]);
+                } else {
+                    vis.buttonContainer.select('.mbti-description-right')
+                        .text(vis.mbtiDescriptions[letter]);
+                    vis.buttonContainer.select('.mbti-description-left')
+                        .text(vis.mbtiDescriptions[vis.mbtiPairs[letter]]);
+                }
+            });
+
+            button.on('mouseout', function() {
+                vis.hoverEffect(letter, false);
+
+                vis.buttonContainer.selectAll('.mbti-description-left')
+                    .text('👀 TRY hover over a button!!');
+                vis.buttonContainer.selectAll('.mbti-description-right')
+                    .text('🤚 SELECT one from each row!!');
+            });
+
         });
+
+        vis.hoverEffect = function(letter, isHovering) {
+            let vis = this;
+
+            // Select the button and its paired button
+            let button = vis.buttonContainer.select(`#button-${letter}`);
+            let pairedButton = vis.buttonContainer.select(`#button-${vis.mbtiPairs[letter]}`);
+
+            // Apply or remove the hover class based on isHovering
+            button.classed('mbti-letter-button-hover', isHovering);
+            pairedButton.classed('mbti-letter-button-hover', isHovering);
+        };
 
         // Prepare a container for the selected MBTI image
         vis.imageContainer = d3.select('#' + vis.parentElement).append('div')

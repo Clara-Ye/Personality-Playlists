@@ -15,49 +15,17 @@
     src: url('font/ChalkboyRegular-vmXe7.otf') format('truetype');
 }
 
-
-@font-face {
-    font-family: 'Architects Daughter', cursive;
-    src: url('https://fonts.googleapis.com/css?family=Architects+Daughter') format('truetype');
-}
-
 /*End of Load Fonts*/
 
-body {
+body{
     background-color: #393A4C;
     /*padding: 10vh;*/
-    font-family: 'Architects Daughter', cursive;
 }
 
 .container-fluid{
     border: white;
     border-radius: 10px;
-}
 
-input,
-textarea,
-keygen,
-select,
-button,
-table,
-.hd-border,
-.tooltip,
-fieldset,
-.checkbox > input[type="checkbox"] + label:before,
-.radio > input[type="radio"] + label:before {
-    background: transparent;
-    -ms-flex-item-align: center;
-    align-self: center;
-    outline: none;
-    border: 2px solid #111111;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    /*
-        Above is shorthand for:
-        border-top-left-radius: 255px 15px;
-        border-top-right-radius: 15px 225px;
-        border-bottom-right-radius: 225px 15px;
-        border-bottom-left-radius:15px 255px;
-        */
 }
 
 /* Headings */
@@ -275,11 +243,6 @@ main{
 
 
 /* genre vis*/
-.section4 .tooltip {
-    font-family: 'Architects Daughter', cursive;
-    background: #fff4d6;
-}
-
 .genre-icon:hover {
     cursor: pointer;
 }
@@ -290,19 +253,24 @@ main{
 }
 
 #genre-tooltip-small-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
     padding: 20px;
 }
 
 #genre-tooltip-large-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: lightgrey;
     padding: 20px;
 }
 
 #radar-tooltip-container {
+    border: thin solid grey;
+    border-radius: 5px;
+    background: white;
     padding: 20px;
-}
-
-#radar-tooltip {
-    position: absolute;
 }
 
 #genre-tooltip-small-name-container,
@@ -318,143 +286,6 @@ main{
     top: 28px;
     right: 20px;
 }
-
-/*MBTI ALL*/
-.mbti-tooltip {
-    display: none;
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    z-index: 100;
-    text-align: center;
-}
-
-.mbti-img {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-}
-
-/*MBTI DETAIL*/
-.image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40%;
-    height: 40%;
-    position: relative;
-}
-
-.mbti-info {
-    margin-left: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-#mbtiDetail {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.button-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    width: 40%;
-    padding: 10px;
-    align-items: center;
-}
-
-.mbti-letter-button {
-    width: 80%;
-    margin: 1%;
-    padding: 10px;
-    flex: 1 0 20%;
-    background-size: cover;
-    background-position: center;
-    border: none;
-    outline: none;
-}
-
-.mbti-letter-button-selected {
-    color: #c22121;
-    font-weight: bolder;
-}
-
-.mbit-detail-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.mbti-info h3{
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    margin: 0;
-    font-size: 2vw;
-    text-align: center;
-}
-
-.personalityClass {
-    color: #98a6a9;
-    font-size: 20px;
-}
-.personality-color-sentinels {
-    color: #8fdee1;
-    fill: #8fdee1;
-}
-
-.personality-color-explorers {
-    color: #f3dc50;
-    fill: #f3dc50;
-}
-
-.personality-color-diplomats {
-    color: #74b48c;
-    fill: #74b48c;
-}
-
-.personality-color-analysts {
-    color: #747db4;
-    fill: #747db4;
-}
-
-
-/*MUSIC MBTI DISTRIBUTION*/
-.music-type-select {
-    width: 100%;
-    padding: 5px 20px;
-    text-align: center;
-    text-align-last: center;
-    background: transparent;
-    -ms-flex-item-align: center;
-    align-self: center;
-    border: 2px solid #111111;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-}
-
-option {
-    background-color: rgba(255, 255, 255, 0.5);
-    border: none;
-}
-
-.select-container {
-    position: absolute;
-    left: 10px;
-    text-align: center;
-    background: transparent;
-    -ms-flex-item-align: center;
-    align-self: center;
-    border: 2px solid #111111;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-}
-
 
 /*MUSIC GENRE INTRO*/
 #genre-tooltip-large-figure-container {
@@ -530,19 +361,198 @@ option {
 }
 
 /*TEST RESULT*/
-.switch-baseline-button rect {
-    background: transparent;
-    -ms-flex-item-align: center;
-    align-self: center;
-    outline: none;
-    border: 2px solid #111111;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-}
-
 .switch-baseline-button:hover {
     cursor: pointer;
  }
 
+/* * * * * * * * * * * * * *
+*       Jyuan's CSS        *
+* * * * * * * * * * * * * */
 
+/*MBTI ALL*/
+.mbti-tooltip {
+    display: none;
+    position: absolute;
+    padding: 10px;
+    z-index: 100;
+    text-align: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border: none;
+    background-color: transparent;
+    width: 120px;
+    height: 90px;
+    color: black;
+    text-shadow: 1px 1px 2px white;
+}
 
+.mbti-img {
+    position: absolute;
+}
+
+/*MBTI DETAIL*/
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 40%;
+    position: relative;
+}
+
+.mbti-info {
+    margin-left: 10px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#mbtiDetail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    width: 35%;
+    padding: 10px;
+    align-items: center;
+}
+
+.mbti-letter-button {
+    width: 80%;
+    margin: 1%;
+    padding: 10px;
+    flex: 1 0 20%;
+    background-size: cover;
+    background-position: center;
+    border: none;
+    outline: none;
+}
+
+.mbti-letter-button-selected {
+    color: #c22121;
+    font-weight: bolder;
+}
+
+.mbit-detail-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mbti-info h3{
+    position: absolute;
+    top: 40%;
+    left: 65%;
+    margin: 0;
+    font-size: 2vw;
+    text-align: center;
+}
+
+.personalityClass {
+    color: #737373;
+    font-size: 20px;
+}
+.personality-color-sentinels {
+    color: #0ec2c7;
+    fill: #0ec2c7;
+}
+
+.personality-color-explorers {
+    color: #d0ba22;
+    fill: #d0ba22;
+}
+
+.personality-color-diplomats {
+    color: #369d60;
+    fill: #369d60;
+}
+
+.personality-color-analysts {
+    color: #3d4dbb;
+    fill: #3d4dbb;
+}
+
+.mbti-letter-button-hover {
+    transform: scale(1.2);
+    transition: transform 0.3s;
+}
+
+/*MBTI MAP*/
+.mbti-type-select {
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-top: 7%;
+    text-align: center;
+    text-align-last: center;
+    line-height: 1.5em;
+    cursor: pointer;
+}
+#map-tooltip{
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    padding-top: 50px;
+    z-index: 100;
+    text-align: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 240px;
+    height: 180px;
+    color: black;
+    text-shadow: 1px 1px 2px white;
+}
+
+.map-text-svg h3{
+    position: absolute;
+    font-size: 2vw;
+    text-align: center;
+}
+.map-text-svg {
+    text-align: center;
+}
+
+/*MBTI MUSIC DISTRIBUTION*/
+.music-text-svg h3{
+    position: absolute;
+    font-size: 2vw;
+    text-align: center;
+}
+.music-text-svg {
+    text-align: center;
+}
+
+.music-type-select {
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-top: 5%;
+    text-align: center;
+    text-align-last: center;
+    line-height: 1.5em;
+    cursor: pointer;
+}
+
+option {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+}
+
+.select-container {
+    position: absolute;
+    z-index: 1000;
+    text-align: center;
+}
 

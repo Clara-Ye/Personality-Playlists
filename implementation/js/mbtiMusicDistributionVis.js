@@ -13,19 +13,37 @@ class mbtiMusicDistributionVis {
     initVis() {
         let vis = this;
 
+        vis.margin = { top: 20, right: 20, bottom: 20, left: 20 };
+
+        // Update width and height based on the new window size
+        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
+        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
+
         // Create a main container
-        let mainContainer = d3.select("#" + vis.parentElement)
+        vis.mainContainer = d3.select("#" + vis.parentElement)
             .append("div")
             .style("display", "flex")
             .style("align-items", "center");
 
         // Add a selection box for music types
-        let selectContainer = mainContainer.append("div")
+        let selectContainer = vis.mainContainer.append("div")
             .attr("class", "select-container")
-            .style("margin-left", "10%")
-            .style("width", "20%")
-            .style("height", "50px")
+            .style("margin-left", "12%")
+            .style("background", `url('img/sketch/rect_2.png')`)
+            .style("background-size", "100% 100%")
+            .style("width", "15%")
+            .style("height", "8%")
             .style("padding", "5px");
+        d3.select(".select-container")
+            .on("mouseover", function() {
+                d3.select(this)
+                    .style("transform", "scale(1.2)")
+                    .style("cursor", "pointer");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .style("transform", "scale(1)");
+            });
 
         vis.musicTypeSelect = selectContainer
             .append("select")
@@ -41,22 +59,53 @@ class mbtiMusicDistributionVis {
             .data(vis.uniqueGenres)
             .enter()
             .append("option")
-            .text(d => d.replace('rating_', '').replace(/_/g, ' '))
+            .text(d => {
+                let formatted = d.replace('rating_', '').replace(/_/g, ' ');
+                return formatted.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+            })
             .attr("value", d => d);
+
+        // Set the initial selected music type
+        vis.selectedMusicType = vis.uniqueGenres[0];
+        console.log(vis.selectedMusicType);
+
+        vis.textSvg = vis.mainContainer.append("svg")
+            .attr("width", "100%")
+            .attr("height", vis.height)
+
+        vis.foreignObject = vis.textSvg.append("foreignObject")
+            .attr("width", "80%")
+            .attr("height", vis.height)
+            .attr("x", "15%")
+            .attr("y", "30%");
+
+        // mbti image container
+        vis.imageContainer = d3.select("#" + vis.parentElement).select(".distribution-image-container");
+        vis.imgSize = vis.height * 0.4;
+        vis.imageContainer = vis.mainContainer.append("div")
+            .attr("class", "distribution-image-container")
+            .style("margin-left",  "2%")
+            .style("text-align", "center")
+        vis.imageContainer.append("img")
+            .attr("src", `img/genre_figures/${vis.selectedMusicType}.png`)
+            .style("width", vis.imgSize + "px")
+            .style("height", vis.imgSize + "px");
+
 
         vis.musicTypeSelect.on("change", function() {
             vis.selectedMusicType = d3.select(this).property("value");
             vis.musicTypeSelect.property("value", vis.selectedMusicType);
+
+            vis.imageContainer.selectAll("img").remove();
+            vis.imageContainer.append("img")
+                .attr("src", `img/genre_figures/${vis.selectedMusicType}.png`)
+                .style("width", vis.imgSize + "px")
+                .style("height", vis.imgSize + "px");
             vis.wrangleData();
         });
 
-        // Set the initial selected music type
-        vis.selectedMusicType = vis.uniqueGenres[0];
-
-        vis.margin = { top: 20, right: 20, bottom: 20, left: 20 };
-
         // Append SVG to the main container
-        vis.svg = mainContainer.append("svg")
+        vis.svg = vis.mainContainer.append("svg")
 
         vis.defs = vis.svg.append("defs");
         vis.sketchImages = ["circle_01.png", "circle_02.png", "circle_03.png", "circle_04.png", "circle_05.png", "circle_06.png",
@@ -91,6 +140,8 @@ class mbtiMusicDistributionVis {
             });
 
         vis.radiusScale = d3.scaleSqrt();
+        vis.fontSizeScale = d3.scaleLinear().range([10, 25]);
+
 
         window.addEventListener('resize', () => vis.handleResize());
 
@@ -111,11 +162,11 @@ class mbtiMusicDistributionVis {
             .attr("height", vis.height);
 
         // Update the force simulation center
-        vis.simulation.force("center", d3.forceCenter(vis.width*0.6, vis.height /2));
+        vis.simulation.force("center", d3.forceCenter(vis.width*0.16, vis.height /2));
 
         // Update the radius scale range based on the new dimensions
-        vis.minRadius = vis.width/60;
-        vis.maxRadius = vis.width/18;
+        vis.minRadius = vis.width/80;
+        vis.maxRadius = vis.width/25;
         vis.radiusScale.range([vis.minRadius, vis.maxRadius]);
 
         // Apply updated radius to circles and possibly adjust label positions
@@ -215,11 +266,25 @@ class mbtiMusicDistributionVis {
 
         vis.displayData = Object.entries(vis.displayDataByMusic).map(([type, average]) => ({ type, average }));
 
+        vis.highRate = Object.keys(vis.displayDataByMusic).reduce((a, b) => vis.displayDataByMusic[a] > vis.displayDataByMusic[b] ? a : b);
+        let highRateEntry = vis.mbtiData.find(entry => entry.mbti === vis.highRate);
+        let highRateClass = highRateEntry ? `personality-color-${highRateEntry.class.toLowerCase()}` : 'default-class-color';
+
+        vis.foreignObject.selectAll('*').remove();
+        vis.foreignObject.append("xhtml:div").attr("class", "music-text-svg")
+            .html(`
+                <h3 class="${highRateClass}" style="left: 35%" ><strong>${vis.highRate}</strong></h3>
+                <br><br><br><br><br><br><br><br>
+                <span>gives <strong class="${highRateClass}">HIGHEST</strong> (biggest bubble!)</span>
+                <span>ranking to 👆 music genre </span>
+            `);
+
         // Define the radius scale
         let maxAverage = d3.max(vis.displayData, d => d.average);
         let minAverage = d3.min(vis.displayData, d => d.average);
 
         vis.radiusScale.domain([minAverage, maxAverage])
+        vis.fontSizeScale.domain([minAverage, maxAverage]);
 
 
         // Update or create patterns based on the updated circle radius
@@ -263,6 +328,19 @@ class mbtiMusicDistributionVis {
             .attr("class", d => `mbti-circle ${d.type}`)
             .attr("r", d => vis.radiusScale(d.average))
             .style("fill", d => `url(#sketch-pattern-${d.type})`)
+            .style("cursor", "pointer")
+            .on('mouseover', function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", vis.radiusScale(d.average) * 1.1);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", vis.radiusScale(d.average));
+            });
 
         circles.exit()
             .transition()
@@ -283,8 +361,15 @@ class mbtiMusicDistributionVis {
             })
             .attr("text-anchor", "middle")
             .attr("dy", "0.35em")
-            .text(d => `${d.type}: ${Number.isFinite(d.average) ? d.average.toFixed(2) : "N/A"}`);
-
+            .style("font-size", d => `${vis.fontSizeScale(d.average)}px`)
+            .text(d => `${d.type}`)
+            .style("cursor", "pointer")
+            .on('mouseover', function(event, d) {
+                d3.select(this).text(`${Number.isFinite(d.average) ? d.average.toFixed(2) : "N/A"}`);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).text(`${d.type}`);
+            });
 
 
         labels.exit()
