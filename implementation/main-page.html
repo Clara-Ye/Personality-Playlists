@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS 171 MBTI NonBelievers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+    <!-- Scroll page process bar -->
+    <ul class = 'navigation_dots'>
+        <li class = "selected"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+
+    <main>
+        <div class="container-fluid">
+            <!-- Full screen welcome page -->
+            <div class="row full-height">
+                <div class="container_welcome">
+                    <h1>Welcome Page!</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1:MBTI ALL -->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section1'>
+                    <h3>Section 1: Introduce MBTI</h3>
+                    <div id = 'mbtiAll' class="placeholder"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--Section 2: MBTI DETAIL-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section2'>
+                    <h3>Section 2: Each MBTI letter represent</h3>
+                    <div id = 'mbtiDetail' class="placeholder"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--Section 3: MBTI MAP-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section2'>
+                    <h3>Section 2: Each MBTI letter represent</h3>
+                    <div id="mbtiMap" class="placeholder"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--Section 4 PAPER-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section3'>
+                    <h3>Section 3: The relationship between MBTI and Music</h3>
+                    <<div id = 'papers_vis' class="placeholder"></div>
+                </div>
+            </div>
+        </div>
+        <!--Section 5: MUSIC GENRES-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section4'>
+                    <h3>Section 4: Music Genres</h3>
+                    <div id = 'genre_vis' class="placeholder"></div>
+                </div>
+            </div>
+        </div>
+        <!--Section 6-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section5'>
+                    <h3>Section 5: Find your Type</h3>
+                    <div id="test_select" class = "placeholder"></div>
+                </div>
+            </div>
+        </div>
+        <!--Section 7-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section6'>
+                    <h3>Section 6: Find your Type - Result</h3>
+                    <div id="test_vis" class = "placeholder"></div>
+                </div>
+            </div>
+        </div>
+        <!--Section 8-->
+        <div class="row full-height">
+            <div class="col-12  d-flex align-items-center justify-content-center">
+                <div class = 'section7'>
+                    <h3>Section 7: Free Navigation</h3>
+                    <div id="mbtiMusicDistribution" class = "placeholder"></div>
+                </div>
+            </div>
+        </div>
+        <!--Section 9-->
+        <div class="row full-height">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+                <div class='section8'>
+                    <h3>Section 8: Reference</h3>
+                    <!-- Circle image placeholders -->
+                    <div class="circle_image_placeholder d-flex justify-content-center">
+                        <div class="circle_with_text">
+                            <div class="circle_image">
+                                <img src="img/Ling_bw.PNG" alt="Default" class = 'ling_default-img'>
+                                <img src='img/Ling.PNG' alt='Hover' class='ling_hover-img'>
+                            </div>
+                            <div class="text_under_image">DJ: Lingbo<br>ENFJ</div>
+                        </div>
+                        <div class="circle_with_text">
+                            <div class="circle_image">
+                                <img src="img/Clara_bw.PNG" alt="Default" class='clara_default-img'>
+                                <img src='img/Clara.PNG' alt='Hover' class='clara_hover-img'>
+                            </div>
+                            <div class="text_under_image">Rocker: Clara<br>INTJ</div>
+                        </div>
+                        <div class="circle_with_text">
+                            <div class="circle_image">
+                                <img src = 'img/Quan_bw.PNG' alt = 'Default' class = 'quan_default-img'>
+                                <img src = 'img/Quan.PNG' alt = 'Hover' class = 'quan_hover-img'>
+                            </div>
+                            <div class="text_under_image">Rapper: Jyuan<br>ENTJ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+<!-- JS libraries -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+<!-- D3 -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<!-- d3 GEO -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="https://d3js.org/d3-geo.v1.min.js"></script>
+
+<!-- OWN JS -->
+<script src="js/main_style.js"></script>
+
+<script src="js/genre_radar_vis.js"></script>
+<script src="js/genre_vis.js"></script>
+<script src="js/mbtiAllVis.js"></script>
+<script src="js/mbtiDetailVis.js"></script>
+<script src="js/test_genre_vis.js"></script>
+<script src="js/test_mbti_vis.js"></script>
+<script src="js/test_select.js"></script>
+<script src="js/mbtiMusicDistributionVis.js"></script>
+<script src="js/mbtiMapVis.js"></script>
+<!--papers_vis.js-->
+<script src="js/papers.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
