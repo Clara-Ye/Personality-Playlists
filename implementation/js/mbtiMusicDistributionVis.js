@@ -28,12 +28,22 @@ class mbtiMusicDistributionVis {
         // Add a selection box for music types
         let selectContainer = vis.mainContainer.append("div")
             .attr("class", "select-container")
-            .style("margin-left", "10%")
+            .style("margin-left", "12%")
             .style("background", `url('img/sketch/rect_2.png')`)
             .style("background-size", "100% 100%")
-            .style("width", "10%")
-            .style("height", "50px")
+            .style("width", "15%")
+            .style("height", "8%")
             .style("padding", "5px");
+        d3.select(".select-container")
+            .on("mouseover", function() {
+                d3.select(this)
+                    .style("transform", "scale(1.2)")
+                    .style("cursor", "pointer");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .style("transform", "scale(1)");
+            });
 
         vis.musicTypeSelect = selectContainer
             .append("select")
@@ -49,8 +59,10 @@ class mbtiMusicDistributionVis {
             .data(vis.uniqueGenres)
             .enter()
             .append("option")
-            .text(d => d.replace('rating_', '').replace(/_/g, ' '))
-            .text(d => d.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}))
+            .text(d => {
+                let formatted = d.replace('rating_', '').replace(/_/g, ' ');
+                return formatted.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+            })
             .attr("value", d => d);
 
         // Set the initial selected music type
@@ -58,28 +70,26 @@ class mbtiMusicDistributionVis {
         console.log(vis.selectedMusicType);
 
         vis.textSvg = vis.mainContainer.append("svg")
-            .attr("width", "50%")
+            .attr("width", "100%")
             .attr("height", vis.height)
-            .attr("margin-top", 50)
-            .attr("margin-left", 50)
 
         vis.foreignObject = vis.textSvg.append("foreignObject")
-            .attr("width", "50%")
+            .attr("width", "80%")
             .attr("height", vis.height)
-            .attr("x", "30%")
+            .attr("x", "15%")
             .attr("y", "30%");
 
         // mbti image container
         vis.imageContainer = d3.select("#" + vis.parentElement).select(".distribution-image-container");
-
+        vis.imgSize = vis.height * 0.4;
         vis.imageContainer = vis.mainContainer.append("div")
             .attr("class", "distribution-image-container")
-            .style("margin-left", 0)
+            .style("margin-left",  "2%")
             .style("text-align", "center")
         vis.imageContainer.append("img")
-            .attr("src", `img/Music/${vis.selectedMusicType}.png`)
-            .style("width", "300px")
-            .style("height", "300px");
+            .attr("src", `img/genre_figures/${vis.selectedMusicType}.png`)
+            .style("width", vis.imgSize + "px")
+            .style("height", vis.imgSize + "px");
 
 
         vis.musicTypeSelect.on("change", function() {
@@ -88,9 +98,9 @@ class mbtiMusicDistributionVis {
 
             vis.imageContainer.selectAll("img").remove();
             vis.imageContainer.append("img")
-                .attr("src", `img/Music/${vis.selectedMusicType}.png`)
-                .style("width", "300px")
-                .style("height", "300px");
+                .attr("src", `img/genre_figures/${vis.selectedMusicType}.png`)
+                .style("width", vis.imgSize + "px")
+                .style("height", vis.imgSize + "px");
             vis.wrangleData();
         });
 
@@ -130,6 +140,8 @@ class mbtiMusicDistributionVis {
             });
 
         vis.radiusScale = d3.scaleSqrt();
+        vis.fontSizeScale = d3.scaleLinear().range([10, 25]);
+
 
         window.addEventListener('resize', () => vis.handleResize());
 
@@ -150,7 +162,7 @@ class mbtiMusicDistributionVis {
             .attr("height", vis.height);
 
         // Update the force simulation center
-        vis.simulation.force("center", d3.forceCenter(vis.width*0.2, vis.height /2));
+        vis.simulation.force("center", d3.forceCenter(vis.width*0.16, vis.height /2));
 
         // Update the radius scale range based on the new dimensions
         vis.minRadius = vis.width/80;
@@ -259,13 +271,12 @@ class mbtiMusicDistributionVis {
         let highRateClass = highRateEntry ? `personality-color-${highRateEntry.class.toLowerCase()}` : 'default-class-color';
 
         vis.foreignObject.selectAll('*').remove();
-        vis.foreignObject.append("xhtml:div")
+        vis.foreignObject.append("xhtml:div").attr("class", "music-text-svg")
             .html(`
-                <div style="text-align: center">
-                    <h3 class="${highRateClass}" ><strong>${vis.highRate}</strong></h3>
-                    <span>gives <strong class="${highRateClass}">HIGHEST</strong> (biggest bubble!)</span>
-                    <span>ranking to 👇 music genre </span>
-                </div>
+                <h3 class="${highRateClass}" style="left: 35%" ><strong>${vis.highRate}</strong></h3>
+                <br><br><br><br><br><br><br><br>
+                <span>gives <strong class="${highRateClass}">HIGHEST</strong> (biggest bubble!)</span>
+                <span>ranking to 👆 music genre </span>
             `);
 
         // Define the radius scale
@@ -273,6 +284,7 @@ class mbtiMusicDistributionVis {
         let minAverage = d3.min(vis.displayData, d => d.average);
 
         vis.radiusScale.domain([minAverage, maxAverage])
+        vis.fontSizeScale.domain([minAverage, maxAverage]);
 
 
         // Update or create patterns based on the updated circle radius
@@ -316,6 +328,7 @@ class mbtiMusicDistributionVis {
             .attr("class", d => `mbti-circle ${d.type}`)
             .attr("r", d => vis.radiusScale(d.average))
             .style("fill", d => `url(#sketch-pattern-${d.type})`)
+            .style("cursor", "pointer")
             .on('mouseover', function(event, d) {
                 d3.select(this)
                     .transition()
@@ -348,7 +361,9 @@ class mbtiMusicDistributionVis {
             })
             .attr("text-anchor", "middle")
             .attr("dy", "0.35em")
+            .style("font-size", d => `${vis.fontSizeScale(d.average)}px`)
             .text(d => `${d.type}`)
+            .style("cursor", "pointer")
             .on('mouseover', function(event, d) {
                 d3.select(this).text(`${Number.isFinite(d.average) ? d.average.toFixed(2) : "N/A"}`);
             })

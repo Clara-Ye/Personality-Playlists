@@ -37,7 +37,7 @@ class mbtiAllVis {
 		let button = document.createElement('button');
 		button.innerHTML = 'shuffle';
 		button.style.position = 'absolute';
-		button.style.bottom = '25%';
+		button.style.top = '10%';
 		button.style.left = '50%';
 		button.style.transform = 'translateX(-50%)';
 		button.style.backgroundImage = 'url("img/sketch/rect_5.png")';
@@ -177,6 +177,7 @@ class mbtiAllVis {
 				tooltip.style.display = 'none';
 				vis.imgContainer.node().appendChild(tooltip);
 
+				img.style.cursor = 'pointer';
 				// Event listeners for showing/hiding tooltip
 				img.onmouseover = () => {
 					let tooltipWidth = 120;

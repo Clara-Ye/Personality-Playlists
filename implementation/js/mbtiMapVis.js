@@ -25,15 +25,39 @@ class mbtiMapVis {
         // Add a selection box for music types
         let selectContainer = vis.mainContainer.append("div")
             .attr("class", "select-container")
-            .style("margin-left", "10%")
+            .style("margin-left", "13%")
             .style("background", `url('img/sketch/rect_5.png')`)
             .style("background-size", "100% 100%")
             .style("width", "10%")
             .style("height", "50px")
             .style("padding", "5px");
 
+        d3.select(".select-container")
+            .on("mouseover", function() {
+                d3.select(this)
+                    .style("transform", "scale(1.2)")
+                    .style("cursor", "pointer");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .style("transform", "scale(1)");
+            });
+
         // Extract unique genres
         vis.uniqueGenres = ["ENFJ", "ENFP", "ENTJ", "ENTP", "ESFJ", "ESFP", "ESTJ", "ESTP", "INFJ", "INFP", "INTJ", "INTP", "ISFJ", "ISFP", "ISTJ", "ISTP"];
+
+        vis.mapMBTIToClass = function mapMBTIToClass(mbtiType) {
+            switch (mbtiType) {
+                case "ENTJ": case "ENTP": case "INTJ": case "INTP":
+                    return "personality-color-analysts";
+                case "ENFJ": case "ENFP": case "INFJ": case "INFP":
+                    return "personality-color-diplomats";
+                case "ESTJ": case "ESFJ": case "ISTJ": case "ISFJ":
+                    return "personality-color-sentinels";
+                case "ISTP": case "ESTP": case "ESFP": case "ISFP":
+                    return "personality-color-explorers";
+            }
+        }
 
         vis.mbtiTypeSelect = selectContainer
             .append("select")
@@ -48,19 +72,8 @@ class mbtiMapVis {
             .append("option")
             .text(d => d)
             .attr("value", d => d)
-            .attr("class", d => mapMBTIToClass(d));
-        function mapMBTIToClass(mbtiType) {
-            switch (mbtiType) {
-                case "ENTJ": case "ENTP": case "INTJ": case "INTP":
-                    return "personality-color-analysts";
-                case "ENFJ": case "ENFP": case "INFJ": case "INFP":
-                    return "personality-color-diplomats";
-                case "ESTJ": case "ESFJ": case "ISTJ": case "ISFJ":
-                    return "personality-color-sentinels";
-                case "ISTP": case "ESTP": case "ESFP": case "ISFP":
-                    return "personality-color-explorers";
-            }
-        }
+            .attr("class", d => vis.mapMBTIToClass(d));
+
 
         vis.mapColorToClass = function (mbtiType) {
             switch (mbtiType) {
@@ -78,22 +91,20 @@ class mbtiMapVis {
         vis.textSvg = vis.mainContainer.append("svg")
             .attr("width", "30%")
             .attr("height", vis.height)
-            .attr("margin-top", 50)
-            .attr("margin-left", 50)
 
         vis.foreignObject = vis.textSvg.append("foreignObject")
-            .attr("width", "50%")
+            .attr("width", "80%")
             .attr("height", vis.height)
-            .attr("x", "30%")
+            .attr("x", "20%")
             .attr("y", "30%");
 
         // mbti image container
         vis.imageContainer = d3.select("#" + vis.parentElement).select(".map-image-container");
 
         vis.imageContainer = vis.mainContainer.append("div")
-                .attr("class", "map-image-container")
-                .style("margin-left", 0)
-                .style("text-align", "center");
+            .attr("class", "map-image-container")
+            .style("margin-left", 0)
+            .style("text-align", "center");
 
         // Append SVG to the main container
         vis.svg = vis.mainContainer.append("svg")
@@ -173,8 +184,8 @@ class mbtiMapVis {
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
         //adjust the scale by zoom factor
-        let zoomFactor = vis.height / 600;
-        let defaultScale = 230;
+        let zoomFactor = vis.width / 1200;
+        let defaultScale = 200;
 
         vis.projection
             .translate([vis.width * vis.mapPosition, vis.height / 2])
@@ -314,8 +325,8 @@ class mbtiMapVis {
                 tooltipHtml = `
                 <div>
                     <strong><p>${countryKey}</p></strong>
-                    <p>${maxType} (most): ${maxValue}%</p>
-                    <p>${minType} (least): ${minValue}%</p>
+                    <p class="${vis.mapMBTIToClass(maxType)}">${maxType} (most): ${maxValue}%</p>
+                    <p class="${vis.mapMBTIToClass(minType)}">${minType} (least): ${minValue}%</p>
                 </div>`;
             }
             vis.countryInfo[countryKey].tooltipHtml = tooltipHtml;
@@ -332,14 +343,20 @@ class mbtiMapVis {
         vis.highCountry = vis.highestCountryByMbtiType[vis.selectedMBTIType];
 
         vis.fontColor = vis.mapColorToClass(vis.selectedMBTIType)[1];
+        let count = 0;
+        for (let i = 0; i < vis.highCountry.length; i++) {
+            if (vis.highCountry[i].match(/[a-zA-Z]/)) {
+                count++;
+            }
+        }
+        vis.highCountryPadding = 48.6 - 3.4*count;
         vis.foreignObject.selectAll('*').remove();
-        vis.foreignObject.append("xhtml:div")
+        vis.foreignObject.append("xhtml:div").attr("class", "map-text-svg")
             .html(`
-                <div style="text-align: center">
-                    <h3 style="color: ${vis.fontColor}">${vis.highCountry}</h3>
-                    <span> has the <strong style="color: ${vis.fontColor}">LARGEST</strong> percentage of</span>
-                    <p> 👇 personality type</p>
-                </div>
+                <h3 style="color: ${vis.fontColor};left: ${vis.highCountryPadding}%">${vis.highCountry}</h3>
+                <br><br><br><br><br><br><br><br>
+                <span> has the <strong style="color: ${vis.fontColor}">LARGEST</strong> percentage of</span>
+                <p> 👆 personality type</p>
             `);
 
         //draw countries
@@ -371,6 +388,7 @@ class mbtiMapVis {
             });
 
         vis.countriesEnter
+            .style("cursor", "pointer")
             .on('mouseover', function (event, d) {
                 d3.select(this)
                     .attr('stroke-width', '2px')
@@ -381,8 +399,8 @@ class mbtiMapVis {
                     .style("opacity", 1)
                     .style("background-image", `url('img/tooltip/tooltip_8.png')`)
                     .html(vis.countryInfo[d.properties.name].tooltipHtml)
-                    .style("left", `${event.pageX+10}px`)
-                    .style("top", `${event.pageY+10}px`);
+                    .style("left", `${event.pageX+20}px`)
+                    .style("top", `${event.pageY+20}px`);
             })
             .on('mouseout', function (event, d) {
                 d3.select(this)
@@ -396,8 +414,6 @@ class mbtiMapVis {
                 vis.tooltip
                     .style("opacity", 0)
                     .style("background-color", "transparent")
-
-
                     .html("");
             });
 
