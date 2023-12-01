@@ -15,17 +15,49 @@
     src: url('font/ChalkboyRegular-vmXe7.otf') format('truetype');
 }
 
+
+@font-face {
+    font-family: 'Architects Daughter', cursive;
+    src: url('https://fonts.googleapis.com/css?family=Architects+Daughter') format('truetype');
+}
+
 /*End of Load Fonts*/
 
-body{
+body {
     background-color: #393A4C;
     /*padding: 10vh;*/
+    font-family: 'Architects Daughter', cursive;
 }
 
 .container-fluid{
     border: white;
     border-radius: 10px;
+}
 
+input,
+textarea,
+keygen,
+select,
+button,
+table,
+.hd-border,
+.tooltip,
+fieldset,
+.checkbox > input[type="checkbox"] + label:before,
+.radio > input[type="radio"] + label:before {
+    background: transparent;
+    -ms-flex-item-align: center;
+    align-self: center;
+    outline: none;
+    border: 2px solid #111111;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    /*
+        Above is shorthand for:
+        border-top-left-radius: 255px 15px;
+        border-top-right-radius: 15px 225px;
+        border-bottom-right-radius: 225px 15px;
+        border-bottom-left-radius:15px 255px;
+        */
 }
 
 /* Headings */
@@ -243,6 +275,11 @@ main{
 
 
 /* genre vis*/
+.section4 .tooltip {
+    font-family: 'Architects Daughter', cursive;
+    background: #fff4d6;
+}
+
 .genre-icon:hover {
     cursor: pointer;
 }
@@ -253,24 +290,19 @@ main{
 }
 
 #genre-tooltip-small-container {
-    border: thin solid grey;
-    border-radius: 5px;
-    background: lightgrey;
     padding: 20px;
 }
 
 #genre-tooltip-large-container {
-    border: thin solid grey;
-    border-radius: 5px;
-    background: lightgrey;
     padding: 20px;
 }
 
 #radar-tooltip-container {
-    border: thin solid grey;
-    border-radius: 5px;
-    background: white;
     padding: 20px;
+}
+
+#radar-tooltip {
+    position: absolute;
 }
 
 #genre-tooltip-small-name-container,
@@ -396,15 +428,15 @@ main{
 
 /*MUSIC MBTI DISTRIBUTION*/
 .music-type-select {
-    border: none;
-    outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    padding: 10px 20px;
+    width: 100%;
+    padding: 5px 20px;
     text-align: center;
     text-align-last: center;
-    line-height: 1.5em;
+    background: transparent;
+    -ms-flex-item-align: center;
+    align-self: center;
+    border: 2px solid #111111;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
 }
 
 option {
@@ -415,8 +447,12 @@ option {
 .select-container {
     position: absolute;
     left: 10px;
-    z-index: 1000;
     text-align: center;
+    background: transparent;
+    -ms-flex-item-align: center;
+    align-self: center;
+    border: 2px solid #111111;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
 }
 
 
@@ -494,6 +530,15 @@ option {
 }
 
 /*TEST RESULT*/
+.switch-baseline-button rect {
+    background: transparent;
+    -ms-flex-item-align: center;
+    align-self: center;
+    outline: none;
+    border: 2px solid #111111;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
 .switch-baseline-button:hover {
     cursor: pointer;
  }

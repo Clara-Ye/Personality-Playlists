@@ -23,8 +23,6 @@ class mbtiMusicDistributionVis {
         let selectContainer = mainContainer.append("div")
             .attr("class", "select-container")
             .style("margin-left", "10%")
-            .style("background", `url('img/sketch/rect_2.png')`)
-            .style("background-size", "100% 100%")
             .style("width", "20%")
             .style("height", "50px")
             .style("padding", "5px");
