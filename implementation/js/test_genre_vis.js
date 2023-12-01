@@ -185,6 +185,10 @@ class TestGenreVis {
             .style("stroke", "black")
             .style("stroke-width", "2px");
 
+        vis.svg.selectAll('.genre-bubble-circle')
+            .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
+            .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, d, vis); } );
+
         // Update the data binding for labels
         vis.labels = vis.svg.selectAll('.genre-bubble-label')
             .data(vis.nodes, d => d.genre);
@@ -201,6 +205,10 @@ class TestGenreVis {
             .style("fill", "black")
             .attr("dy", "0.35em")
             .text(d => `${d.genre}`);
+
+        vis.svg.selectAll('.genre-bubble-label')
+            .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
+            .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, d, vis); } );
 
         // Restart the simulation with each update
         vis.simulation.nodes(vis.nodes)
@@ -238,9 +246,17 @@ class TestGenreVis {
         }
     }
 
-    // TODO: display tooltip on hover
+    handleMouseOver(element, event, d, vis) {
+        vis.selectedLabel = d3.select('#test_vis').selectAll('text')
+            .filter(function() {
+                return d3.select(this).text() === d.genre;
+            });
+        vis.selectedLabel.text(d.rating_relative.toFixed(2));
+    }
 
-    // TODO: hide tooltip on mouseout
+    handleMouseOut(element, event, d, vis) {
+        vis.selectedLabel.text(d.genre);
+    }
 
     // TODO: handle click on proceed button
 

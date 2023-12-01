@@ -235,6 +235,10 @@ class TestMbtiVis {
             .style("stroke", "black")
             .style("stroke-width", "2px");
 
+        vis.svg.selectAll('.mbti-bubble-circle')
+            .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
+            .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, d, vis); } );
+
         // Update the data binding for labels
         vis.labels = vis.svg.selectAll('.mbti-bubble-label')
             .data(vis.nodes, d => d.mbti);
@@ -251,6 +255,10 @@ class TestMbtiVis {
             .style("fill", "black")
             .attr("dy", "0.35em")
             .text(d => `${d.mbti}`);
+
+        vis.svg.selectAll('.mbti-bubble-label')
+            .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
+            .on('mouseout', function(event, d) { vis.handleMouseOut(this, event, d, vis); } );
 
         // Restart the simulation with each update
         vis.simulation.nodes(vis.nodes)
@@ -288,9 +296,17 @@ class TestMbtiVis {
         }
     }
 
-    // TODO: display tooltip on hover
+    handleMouseOver(element, event, d, vis) {
+        vis.selectedLabel = d3.select('#test_vis').selectAll('text')
+            .filter(function() {
+                return d3.select(this).text() === d.mbti;
+            });
+        vis.selectedLabel.text(d.rating_relative.toFixed(2));
+    }
 
-    // TODO: hide tooltip on mouseout
+    handleMouseOut(element, event, d, vis) {
+        vis.selectedLabel.text(d.mbti);
+    }
 
     // TODO: handle click on proceed button
 
