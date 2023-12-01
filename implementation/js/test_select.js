@@ -23,7 +23,6 @@ class TestSelection {
             "ISTP", "ISFP", "ESTP", "ESFP"]
 
         this.mbtiTestData = this.mbtiTestData.map(row => {
-            row['rating_synthwave'] = row['rating_synthwave_chillwave_vaporwave'];
             row['rating_folk'] = row['rating_indie_folk'];
             delete row['rating_synthwave_chillwave_vaporwave'];
             delete row['rating_indie_folk'];

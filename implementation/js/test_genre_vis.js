@@ -96,9 +96,9 @@ class TestGenreVis {
             .attr("id", "switch-button-genre");
 
         vis.baselineButton.append("rect")
-            .attr("x", vis.width / 2 - 60)
+            .attr("x", vis.width / 2 - 70)
             .attr("y", vis.height - 50)
-            .attr("width", 120)
+            .attr("width", 140)
             .attr("height", 30)
             .attr("fill", "#FFFFFF")
             .style("stroke", "black")
