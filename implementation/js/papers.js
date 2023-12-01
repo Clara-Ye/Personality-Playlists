@@ -190,5 +190,4 @@ class PapersVis{
             .style("shape-rendering", "crispEdges");
 
     }
-
 }
