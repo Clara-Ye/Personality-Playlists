@@ -8,11 +8,14 @@ let promises = [
     d3.json("data/MBTI.json"),
     d3.json("data/mbti_music_data_clean.json"),
     d3.json("data/mbti_music_data_clean_pivot.json"),
+
     //paper data
     d3.json('data/papers.json'),
+
     //MAP data
     d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json"),
     d3.csv("data/MBTI_Countries.csv")
+
 ];
 
 Promise.all(promises)
@@ -39,7 +42,7 @@ function createVis(data) {
     let mbtiDescData = data[4];
 
     // create MBTI visualization instance
-    //let mbtiAll = new mbtiAllVis("mbtiAll", mbtiDescData);
+    let mbtiAll = new mbtiAllVis("mbtiAll", mbtiDescData);
     let mbtiDetail = new mbtiDetailVis("mbtiDetail", mbtiDescData);
 
     // MBTI test data
@@ -60,9 +63,6 @@ function createVis(data) {
     let geoData = data[8];
     let mbtiMapData = data[9];
     let mbtiMap = new mbtiMapVis("mbtiMap", mbtiDescData, geoData, mbtiMapData);
-
-    //create papers data
-    let papersVis = new PapersVis("papers_vis", data[7]);
 
 
 }

@@ -24,7 +24,6 @@ class TestGenreVis {
             .attr("height", vis.height)
             .append("g")
             .attr('transform', `translate (${vis.margin.left}, ${vis.margin.top})`);
-        vis.rc = rough.svg(vis.svg);
 
         vis.svg.append("text")
             .attr("id", "test-genre-vis-header")
@@ -97,9 +96,9 @@ class TestGenreVis {
             .attr("id", "switch-button-genre");
 
         vis.baselineButton.append("rect")
-            .attr("x", vis.width / 2 - 70)
+            .attr("x", vis.width / 2 - 60)
             .attr("y", vis.height - 50)
-            .attr("width", 140)
+            .attr("width", 120)
             .attr("height", 30)
             .attr("fill", "#FFFFFF")
             .style("stroke", "black")
