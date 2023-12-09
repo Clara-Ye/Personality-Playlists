@@ -141,7 +141,7 @@ class GenreVis {
         vis.genreIcon.enter()
             .append("image")
             .merge(vis.genreIcon)
-            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.svg`)
+            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.png`)
             .attr("x", function(d,i) {
                 if (i < 4 || i >= 9) { return vis.margin.left + vis.hSpacing / 2 + vis.radius + (i % 4) * (2 * vis.radius + vis.hSpacing); }
                 else { return vis.margin.left + (i % 5) * (2 * vis.radius + vis.hSpacing); }
@@ -258,7 +258,7 @@ class GenreVis {
             .duration(1000 / frequency)
             .attr("transform", "translate(0," + amplitude + ")")
             // highlight element
-            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}_highlight.svg`)
+            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}_highlight.png`)
             // vibrate up
             .transition()
             .duration(1000 / frequency)
@@ -290,7 +290,7 @@ class GenreVis {
             .transition()
             .duration(1000 / (bpm / 60))
             .attr("transform", "translate(0,0)")
-            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.svg`);
+            .attr("xlink:href", (d) => `img/genre_icons/${d.genre}.png`);
 
     }
 
