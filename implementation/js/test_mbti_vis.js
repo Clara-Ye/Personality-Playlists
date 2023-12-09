@@ -27,15 +27,23 @@ class TestMbtiVis {
 
         vis.svg.append("text")
             .attr("id", "test-genre-vis-header")
-            .text(`As you like ${vis.selectedGenres}, you are`)
+            .text(function() {
+                if (vis.selectedGenres.length == 1) { return `As you like ${vis.selectedGenres}, you are`; }
+                else if (vis.selectedGenres.length == 2) { return `As you like ${vis.selectedGenres[0]} and ${vis.selectedGenres[1]}, you are`; }
+                else { return `As you like ${vis.selectedGenres[0]}, ${vis.selectedGenres[1]}, and ${vis.selectedGenres[2]}, you are`; }
+            })
             .attr("x", vis.width/2)
             .attr("y", vis.height * 0.05)
             .style("text-anchor", "middle");
-        vis.svg.append("text").text("Likely:")
+        vis.svg.append("text")
+            .attr("id", "test-mbti-vis-label-positive")
+            .text("Likely:")
             .attr("x", vis.width/4)
             .attr("y", vis.height * 0.15)
             .style("text-anchor", "middle");
-        vis.svg.append("text").text("Unlikely:")
+        vis.svg.append("text")
+            .attr("id", "test-mbti-vis-label-negative")
+            .text("Unlikely:")
             .attr("x", vis.width/4*3)
             .attr("y", vis.height * 0.15)
             .style("text-anchor", "middle");
@@ -91,6 +99,7 @@ class TestMbtiVis {
 
         vis.baseline = 'same_genres';
 
+        /*
         vis.baselineButton = vis.svg.append("g")
             .attr("class", "button switch-baseline-button")
             .attr("id", "switch-button-mbti");
@@ -111,7 +120,7 @@ class TestMbtiVis {
             .text("Switch Baseline");
 
         vis.baselineButton.on("click", function(event) { vis.switchBaseline(event, vis); } );
-
+        */
         vis.wrangleData();
         vis.updateVis();
     }

@@ -31,7 +31,6 @@ body {
 .container-fluid {
     border: white;
     border-radius: 10px;
-
 }
 
 input,
@@ -437,8 +436,15 @@ main{
 #test-genre-vis-label-positive,
 #test-mbti-vis-label-positive,
 #test-genre-vis-label-negative,
-#test-mbti-vis-label-positive {
+#test-mbti-vis-label-negative {
     font-size: larger;
+}
+
+.genre-bubble-circle:hover,
+.mbti-bubble-circle:hover,
+.genre-bubble-label:hover,
+.mbti-bubble-label:hover {
+    cursor: pointer;
 }
 
 .switch-baseline-button:hover {
