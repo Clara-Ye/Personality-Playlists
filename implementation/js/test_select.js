@@ -74,7 +74,7 @@ class TestSelection {
             .attr("class", "row")
             .attr("id", "genre-icon-container")
             .append("img")
-            .attr("src", "img/random/music_icon.svg")
+            .attr("src", "img/genre_unknown.png")
             .style("width", "40%");
 
         vis.mbtiInstruction = vis.mbtiTestCol.append("div")
@@ -88,7 +88,7 @@ class TestSelection {
             .attr("class", "row")
             .attr("id", "mbti-icon-container")
             .append("img")
-            .attr("src", "img/random/mbti_icon.svg")
+            .attr("src", "img/mbti_unknown.png")
             .style("width", "40%");
 
         vis.testRow.append("text")
