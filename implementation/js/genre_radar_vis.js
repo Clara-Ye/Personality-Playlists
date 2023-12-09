@@ -29,7 +29,7 @@ class RadarVis {
         // init scales
         vis.scale = d3.scaleLinear()
             .domain([0, 1])
-            .range([0, vis.width / 3 - 2]);
+            .range([0, vis.width * 0.3 - 2]);
         vis.ticks = [.25, .5, .75, 1];
 
         // draw axis circles
@@ -95,7 +95,7 @@ class RadarVis {
             .attr("class", "radar-path");
 
         // add tooltip container
-        vis.radarTooltip = d3.select("body")
+        vis.radarTooltip = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr('class', "tooltip")
             .attr('id', 'radar-tooltip')
@@ -135,7 +135,7 @@ class RadarVis {
             .attr("d", vis.line)
             .attr("fill", "#74729a")
             .attr("stroke-opacity", 1)
-            .attr("opacity", 0.8);
+            .attr("opacity", 0.85);
 
     }
 
@@ -152,18 +152,22 @@ class RadarVis {
             .text(featureRow.desc);
 
         // get text location
-        let x = parseFloat(d3.select(element).attr('x')) + window.pageXOffset + vis.margin.left,
-            y = parseFloat(d3.select(element).attr('y')) + window.pageYOffset + vis.margin.top;
+        let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left,
+            y = parseFloat(d3.select(element).attr('y')) + vis.margin.top,
+            height = parseFloat(d3.select(element).attr('height'));
 
         // display tooltip
         vis.radarTooltip
             .style("opacity", 1)
             .style("left", function() {
-                if (x < vis.width * 0.33) { return `${x + vis.tooltipWidth * 0.5}px`; }
-                else if (x < vis.width * 0.66) { return `${x + vis.tooltipWidth * 0.65}px`; }
-                else { return `${x + vis.tooltipWidth * 0.7}px`; }
+                if (x < vis.width * 0.33) { return `${x + vis.tooltipWidth * 0.1}px`; }
+                else if (x < vis.width * 0.66) { return `${x + vis.tooltipWidth * 0.25}px`; }
+                else { return `${x + vis.tooltipWidth * 0.28}px`; }
             })
-            .style("top", `${y + vis.height * 0.3}px`);
+            .style("top", function() {
+                if (y < vis.height * 0.8) { return `${y - 20}px`; }
+                else { return `${y - height/2}px`; }
+            });
 
     }
 

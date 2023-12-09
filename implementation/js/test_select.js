@@ -1,4 +1,3 @@
-
 class TestSelection {
     constructor(_parentElement, _mbtiTestData, _genreData) {
         this.parentElement = _parentElement;
@@ -19,65 +18,18 @@ class TestSelection {
         });
         this.genreList.sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
         this.mbtiList = ["INTJ", "INTP", "ENTJ", "ENTP",
-                         "INFJ", "INFP", "ENFJ", "ENFP",
-                         "ISTJ", "ISFJ", "ESTJ", "ESFJ",
-                         "ISTP", "ISFP", "ESTP", "ESFP"]
-
-        // create genre rating by mbti dataset
+            "INFJ", "INFP", "ENFJ", "ENFP",
+            "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+            "ISTP", "ISFP", "ESTP", "ESFP"]
 
         this.mbtiTestData = this.mbtiTestData.map(row => {
-            row['rating_synthwave'] = row['rating_synthwave_chillwave_vaporwave'];
             row['rating_folk'] = row['rating_indie_folk'];
-            delete row['rating_synthwave_chillwave_vaporwave'];
             delete row['rating_indie_folk'];
             return row;
         });
 
-        this.mbtiGenreData = {};
-        this.genreListKey.forEach(genre => {
-            this.mbtiGenreData[genre] = { genre, average: 0, counts: 0 };
-            this.mbtiTestData.forEach(record => {
-                // If the genreData object is initialized, add the rating
-                this.mbtiGenreData[genre][record.mbti_type] = this.mbtiGenreData[genre][record.mbti_type] || [];
-                let rating = record[`rating_${genre}`];
-                if (rating !== null) {
-                    this.mbtiGenreData[genre][record.mbti_type].push(rating);
-                    // Update the overall average for the genre
-                    this.mbtiGenreData[genre].average += rating;
-                    this.mbtiGenreData[genre].counts += 1;
-                }
-            });
-        });
-
-        this.genreListKey.forEach(genre => {
-            let genreObj = this.mbtiGenreData[genre];
-
-            if (genreObj.average !== 0) {
-                genreObj.average /= genreObj.counts;
-                delete genreObj.counts;
-                delete genreObj.null;
-
-                Object.keys(genreObj)
-                    .filter(mbti => mbti !== "genre" && mbti !== "average")
-                    .forEach(mbti => {
-                        let ratings = genreObj[mbti];
-                        genreObj[mbti] = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-                    });
-            }
-        });
-
-        this.mbtiGenreData = this.genreListKey.map(genre => {
-            let genreObj = this.mbtiGenreData[genre];
-            return {
-                genre: genreObj.genre,
-                average: genreObj.average,
-                ...genreObj, // Spread the MBTI types and their averages
-            };
-        });
-
-        console.log(this.mbtiGenreData);
-
-        this.testCompleted = false;
+        this.wrangleGenreMbtiData(this);
+        this.wrangleMbtiGenreData(this);
 
         this.initVis();
     }
@@ -91,16 +43,6 @@ class TestSelection {
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
         // set up page structure
-
-        d3.select(`#${vis.parentElement}`)
-            .append('div')
-            .attr("class", "row")
-            .attr("id", "instruction-row")
-            .html(`<div class="col-12">
-                        <div id="main-instruction">Now let's do a mini test!</div>
-                        <div id="main-instruction-foot">(Don't worry, it's a personality-test test)</div>
-                   </div>`);
-
         vis.testRow = d3.select(`#${vis.parentElement}`)
             .append('div')
             .attr("class", "row")
@@ -132,8 +74,8 @@ class TestSelection {
             .attr("class", "row")
             .attr("id", "genre-icon-container")
             .append("img")
-            .attr("src", "img/random/music_icon.svg")
-            .style("width", "50%");
+            .attr("src", "img/genre_unknown.png")
+            .style("width", "40%");
 
         vis.mbtiInstruction = vis.mbtiTestCol.append("div")
             .attr("class", "row")
@@ -146,8 +88,17 @@ class TestSelection {
             .attr("class", "row")
             .attr("id", "mbti-icon-container")
             .append("img")
-            .attr("src", "img/random/mbti_icon.svg")
-            .style("width", "50%");
+            .attr("src", "img/mbti_unknown.png")
+            .style("width", "40%");
+
+        vis.testRow.append("text")
+            .text("OR")
+            .style("left", `${vis.width/2-12}px`)
+            .style("top", `${40}px`)
+            .style("font-size", `x-large`)
+            .style("text-align", "center")
+            .style("position", "absolute")
+            .style("width", `50px`);
 
         // add selection buttons
 
@@ -205,7 +156,7 @@ class TestSelection {
             .transition()
             .duration(200)
             .text(d => d)
-            .style("min-width", `${vis.width / 2 * 0.7 / 4 - 10}px`)
+            .style("min-width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
                 if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#74729a"; }
                 else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9d9bc2"; }
@@ -225,7 +176,7 @@ class TestSelection {
             .transition()
             .duration(200)
             .text(d => d)
-            .style("width", `${vis.width / 2 * 0.7 / 4 - 10}px`)
+            .style("width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
                 if (vis.selectedMbti.includes(d)) { return "#74729a"; }
                 else { return "#ffffff" }
@@ -267,7 +218,7 @@ class TestSelection {
             if (vis.selectedGenres.length < 3) {
                 // add current selection to end of list
                 vis.selectedGenres.push(d);
-            // >=3 existing selection
+                // >=3 existing selection
             } else {
                 // replace last element with current selection
                 vis.selectedGenres.pop();
@@ -289,7 +240,7 @@ class TestSelection {
         if (vis.selectedMbti.length == 0 || vis.selectedMbti[0] != d) {
             // update selection to be current selection
             vis.selectedMbti = [d];
-        // current selection is same as existing selection
+            // current selection is same as existing selection
         } else {
             // clear current selection
             vis.selectedMbti = [];
@@ -311,10 +262,10 @@ class TestSelection {
             let testVis;
             // selected genre, display MBTI rankings
             if (vis.selectedGenres.length > 0 && vis.selectedGenres.length <= 3) {
-                testVis = new TestMbtiVis("test_vis", vis.mbtiGenreData, vis.genreData, vis.selectedGenres);
-            // selected MBTI, display genre rankings
+                testVis = new TestMbtiVis("test_vis", vis.genreMbtiData, vis.mbtiGenreData, vis.selectedGenres);
+                // selected MBTI, display genre rankings
             } else if (vis.selectedMbti.length == 1) {
-                testVis = new TestGenreVis("test_vis", vis.mbtiGenreData, vis.genreData, vis.selectedMbti);
+                testVis = new TestGenreVis("test_vis", vis.genreMbtiData, vis.mbtiGenreData, vis.selectedMbti);
             } else {
                 console.log("error in selection");
             }
@@ -325,14 +276,119 @@ class TestSelection {
             });
 
             // disable all buttons
-            vis.confirmButton.on("click", null);
+            vis.confirmButton
+                .transition()
+                .duration(200)
+                .style("background-color", "#AAAAAA");
+            vis.confirmButton
+                .on("click", null);
+            vis.genreButtonGroup.selectAll(".genre-button")
+                .transition()
+                .duration(200)
+                .style("background-color", "#AAAAAA");
             vis.genreButtonGroup.selectAll(".genre-button")
                 .on("click", null);
+            vis.mbtiButtonGroup.selectAll(".mbti-button")
+                .transition()
+                .duration(200)
+                .style("background-color", "#AAAAAA");
             vis.mbtiButtonGroup.selectAll(".mbti-button")
                 .on("click", null);
         }
 
-        // TODO: some signal for no second test?
-
     }
+
+    wrangleGenreMbtiData(vis) {
+        vis.genreMbtiData = {};
+        vis.genreListKey.forEach(genre => {
+            vis.genreMbtiData[genre] = { genre, average: 0, counts: 0 };
+            vis.mbtiTestData.forEach(record => {
+                // If the genreData object is initialized, add the rating
+                vis.genreMbtiData[genre][record.mbti_type] = vis.genreMbtiData[genre][record.mbti_type] || [];
+                let rating = record[`rating_${genre}`];
+                if (rating !== null) {
+                    vis.genreMbtiData[genre][record.mbti_type].push(rating);
+                    // Update the overall average for the genre
+                    vis.genreMbtiData[genre].average += rating;
+                    vis.genreMbtiData[genre].counts += 1;
+                }
+            });
+        });
+
+        vis.genreListKey.forEach(genre => {
+            let genreObj = vis.genreMbtiData[genre];
+
+            if (genreObj.average != 0) {
+                genreObj.average /= genreObj.counts;
+                delete genreObj.counts;
+                delete genreObj.null;
+
+                Object.keys(genreObj)
+                    .filter(mbti => mbti !== "genre" && mbti !== "average")
+                    .forEach(mbti => {
+                        let ratings = genreObj[mbti];
+                        genreObj[mbti] = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+                    });
+            }
+        });
+
+        vis.genreMbtiData = vis.genreListKey.map(genre => {
+            let genreObj = vis.genreMbtiData[genre];
+            return {
+                genre: genreObj.genre,
+                average: genreObj.average,
+                ...genreObj, // Spread the MBTI types and their averages
+            };
+        });
+    }
+
+    wrangleMbtiGenreData(vis) {
+        vis.mbtiGenreData = {};
+
+        vis.mbtiList.forEach(mbti => {
+            vis.mbtiGenreData[mbti] = { mbti, average: 0, counts: 0 };
+        });
+
+        vis.mbtiTestData.forEach(record => {
+            let mbti = record.mbti_type;
+            if (mbti != null) {
+                for (let [key, value] of Object.entries(record)) {
+                    if (key.substring(0,6) == "rating") {
+                        vis.mbtiGenreData[mbti][key.substring(7)] = vis.mbtiGenreData[mbti][key.substring(7)] || [];
+                        if (value != null) {
+                            vis.mbtiGenreData[mbti][key.substring(7)].push(value);
+                            vis.mbtiGenreData[mbti].average += value;
+                            vis.mbtiGenreData[mbti].counts += 1;
+                        }
+                    }
+                }
+            }
+        });
+
+        vis.mbtiList.forEach(mbti => {
+            let mbtiObj = vis.mbtiGenreData[mbti];
+
+            if (mbtiObj.average != 0) {
+                mbtiObj.average /= mbtiObj.counts;
+                delete mbtiObj.counts;
+
+                Object.keys(mbtiObj)
+                    .filter(genre => genre !== "mbti" && genre !== "average")
+                    .forEach(genre => {
+                        let ratings = mbtiObj[genre];
+                        mbtiObj[genre] = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+                    });
+            }
+        });
+
+        vis.mbtiGenreData = vis.mbtiList.map(mbti => {
+            let mbtiObj = vis.mbtiGenreData[mbti];
+            return {
+                mbti: mbtiObj.mbti,
+                average: mbtiObj.average,
+                ...mbtiObj,
+            };
+        });
+    }
+
 }
