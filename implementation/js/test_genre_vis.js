@@ -204,7 +204,7 @@ class TestGenreVis {
             .attr("text-anchor", "middle")
             .style("fill", "black")
             .attr("dy", "0.35em")
-            .text(d => `${d.genre}`);
+            .text(d => vis.getDisplayGenre(d.genre));
 
         vis.svg.selectAll('.genre-bubble-label')
             .on('mouseover', function(event, d) { vis.handleMouseOver(this, event, d, vis); } )
@@ -249,13 +249,20 @@ class TestGenreVis {
     handleMouseOver(element, event, d, vis) {
         vis.selectedLabel = d3.select('#test_vis').selectAll('text')
             .filter(function() {
-                return d3.select(this).text() === d.genre;
+                let genre = vis.getDisplayGenre(d.genre);
+                return d3.select(this).text() === genre;
             });
         vis.selectedLabel.text(d.rating_relative.toFixed(2));
     }
 
     handleMouseOut(element, event, d, vis) {
-        vis.selectedLabel.text(d.genre);
+        vis.selectedLabel.text(d => vis.getDisplayGenre(d.genre));
+    }
+
+    getDisplayGenre(genre_code) {
+        if (genre_code == "hip_hop") { return "Hip hop"; }
+        else if (genre_code == "rnb") { return "R&B"; }
+        else { return `${genre_code.charAt(0).toUpperCase() + genre_code.slice(1)}`; }
     }
 
     // TODO: handle click on proceed button

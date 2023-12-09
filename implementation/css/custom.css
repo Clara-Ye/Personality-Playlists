@@ -354,7 +354,7 @@ main{
     cursor: pointer;
     position: absolute;
     top: 28px;
-    right: 20px;
+    right: 36px;
 }
 
 /*MUSIC GENRE INTRO*/
@@ -369,7 +369,7 @@ main{
 }
 
 .radarLabel:hover {
-    cursor: default;
+    cursor: pointer;
 }
 
 
@@ -431,6 +431,16 @@ main{
 }
 
 /*TEST RESULT*/
+
+#test-genre-vis-header,
+#test-mbti-vis-header,
+#test-genre-vis-label-positive,
+#test-mbti-vis-label-positive,
+#test-genre-vis-label-negative,
+#test-mbti-vis-label-positive {
+    font-size: larger;
+}
+
 .switch-baseline-button:hover {
     cursor: pointer;
 }

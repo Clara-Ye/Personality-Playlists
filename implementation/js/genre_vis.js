@@ -98,7 +98,7 @@ class GenreVis {
         vis.tooltipLarge
             .style('opacity', 0)
             .style("left", `-1080px`);
-        document.getElementById("genre-tooltip-large-container").style.width = `${vis.width - vis.hSpacing/2}px`;
+        document.getElementById("genre-tooltip-large-container").style.width = `${vis.width - vis.hSpacing/2+6}px`;
         document.getElementById("genre-tooltip-large-container").style.height = `${vis.height - vis.vSpacing*3}px`;
 
         vis.tooltipLeft = vis.margin.left + vis.hSpacing/4;
@@ -178,6 +178,9 @@ class GenreVis {
         d3.select("#genre-tooltip-small-intro-container")
             .text(d.desc_short);
 
+        // update tooltip figure
+        vis.tooltipFigure.attr("src", `img/genre_figures/${d.genre}.png`)
+
         // get circle location
         let x = parseFloat(d3.select(element).attr('x')) + vis.margin.left + vis.radius,
             y = parseFloat(d3.select(element).attr('y')) + vis.margin.top + vis.radius;
@@ -223,9 +226,6 @@ class GenreVis {
 
         d3.select("#genre-tooltip-large-intro-container")
             .text(d.desc_long);
-
-        // update tooltip figure
-        vis.tooltipFigure.attr("src", `img/genre_figures/${d.genre}.png`)
 
         // display tooltip
         vis.tooltipLarge
