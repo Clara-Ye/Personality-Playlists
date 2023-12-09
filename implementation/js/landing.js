@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const title = "Decode Your Type|Through|Rhythm You Love";
+    const title = "Decode Your Personality|Through|Melodies You Love";
     const container = document.getElementById('text-wrapper');
     let charIndex = 0;
 
