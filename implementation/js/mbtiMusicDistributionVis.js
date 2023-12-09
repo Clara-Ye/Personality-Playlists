@@ -76,15 +76,16 @@ class mbtiMusicDistributionVis {
         vis.foreignObject = vis.textSvg.append("foreignObject")
             .attr("width", "80%")
             .attr("height", vis.height)
-            .attr("x", "15%")
-            .attr("y", "25%");
+            .attr("x", "-10%")
+            .attr("y", "20%");
 
         // mbti image container
         vis.imageContainer = d3.select("#" + vis.parentElement).select(".distribution-image-container");
         vis.imgSize = vis.height * 0.4;
         vis.imageContainer = vis.mainContainer.append("div")
             .attr("class", "distribution-image-container")
-            .style("margin-left",  "0%")
+            .style("margin-left",  "-60%")
+            .style("margin-top", "30%")
             .style("text-align", "center")
         vis.imageContainer.append("img")
             .attr("src", `img/genre_figures - distribution/${vis.selectedMusicType}.png`)
@@ -162,11 +163,11 @@ class mbtiMusicDistributionVis {
             .attr("height", vis.height);
 
         // Update the force simulation center
-        vis.simulation.force("center", d3.forceCenter(vis.width*0.16, vis.height /2));
+        vis.simulation.force("center", d3.forceCenter(vis.width*0.3, vis.height /2));
 
         // Update the radius scale range based on the new dimensions
-        vis.minRadius = vis.width/80;
-        vis.maxRadius = vis.width/25;
+        vis.minRadius = vis.width/60;
+        vis.maxRadius = vis.width/15;
         vis.radiusScale.range([vis.minRadius, vis.maxRadius]);
 
         // Apply updated radius to circles and possibly adjust label positions
@@ -263,7 +264,6 @@ class mbtiMusicDistributionVis {
 
     updateVis() {
         let vis = this;
-
         vis.displayData = Object.entries(vis.displayDataByMusic).map(([type, average]) => ({ type, average }));
 
         vis.highRate = Object.keys(vis.displayDataByMusic).reduce((a, b) => vis.displayDataByMusic[a] > vis.displayDataByMusic[b] ? a : b);
@@ -273,7 +273,7 @@ class mbtiMusicDistributionVis {
         vis.foreignObject.selectAll('*').remove();
         vis.foreignObject.append("xhtml:div").attr("class", "music-text-svg")
             .html(`
-                <h3 class="${highRateClass}" style="left: 35%" ><strong>${vis.highRate}</strong></h3>
+                <h3 class="${highRateClass}" style="left: 40%" ><strong>${vis.highRate}</strong></h3>
                 <br><br><br>
                 <span>gives <strong class="${highRateClass}">HIGHEST</strong> (biggest bubble!) ranking to</span>
                 <p> 👇 music genre </p>

@@ -103,16 +103,17 @@ class mbtiMapVis {
 
         vis.imageContainer = vis.mainContainer.append("div")
             .attr("class", "map-image-container")
-            .style("margin-left", 0)
+            .style("margin-left",  "-23%")
+            .style("margin-top", "30%")
             .style("text-align", "center");
 
         // Append SVG to the main container
         vis.svg = vis.mainContainer.append("svg")
 
         //adjust the scale by zoom factor
-        let zoomFactor = vis.height / 600;
+        let zoomFactor = vis.width / 500;
         let defaultScale = 230;
-        vis.mapPosition = 0.2;
+        vis.mapPosition = 0.35;
         vis.projection = d3
             .geoOrthographic()
             // .geoStereographic()
@@ -184,7 +185,7 @@ class mbtiMapVis {
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
         //adjust the scale by zoom factor
-        let zoomFactor = vis.width / 1200;
+        let zoomFactor = vis.width / 1000;
         let defaultScale = 200;
 
         vis.projection
