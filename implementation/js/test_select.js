@@ -200,6 +200,19 @@ class TestSelection {
             vis.confirmButton
                 .on("click", null);
         }
+
+        if (vis.selectedGenres.length == 0) {
+            vis.genreIcon.attr("src", "img/genre_unknown.png");
+        } else {
+            vis.genreIcon.attr("src", `img/genre_figures/${vis.selectedGenres[0]}.png`);
+        }
+
+        if (vis.selectedMbti.length == 0) {
+            vis.mbtiIcon.attr("src", "img/mbti_unknown.png");
+        } else {
+            vis.mbtiIcon.attr("src", `img/MBTI/${vis.selectedMbti[0].toUpperCase()}.png`);
+        }
+
     }
 
 
@@ -226,12 +239,6 @@ class TestSelection {
             }
         }
 
-        if (vis.selectedGenres.length == 0) {
-            vis.genreIcon.attr("src", "img/genre_unknown.png");
-        } else {
-            vis.genreIcon.attr("src", `img/genre_figures/${vis.selectedGenres[0]}.png`);
-        }
-
         vis.wrangleData();
 
     }
@@ -246,15 +253,11 @@ class TestSelection {
         if (vis.selectedMbti.length == 0 || vis.selectedMbti[0] != d) {
             // update selection to be current selection
             vis.selectedMbti = [d];
-            vis.mbtiIcon.attr("src", `img/MBTI/${d.toUpperCase()}.png`);
         // current selection is same as existing selection
         } else {
             // clear current selection
             vis.selectedMbti = [];
-            vis.mbtiIcon.attr("src", "img/mbti_unknown.png");
         }
-
-
         vis.updateVis();
     }
 
