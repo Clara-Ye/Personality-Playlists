@@ -323,7 +323,7 @@ main{
 
 .section5 .tooltip {
     font-family: 'Architects Daughter', cursive;
-    background: #fff4d6;
+    background: #fff8e4;
 }
 
 .genre-icon:hover {
@@ -369,6 +369,10 @@ main{
 
 .radarLabel:hover {
     cursor: pointer;
+}
+
+#radar-tooltip {
+    background: #fff4d6;
 }
 
 

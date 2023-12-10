@@ -158,9 +158,9 @@ class TestSelection {
             .text(d => d)
             .style("min-width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
-                if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#74729a"; }
-                else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9d9bc2"; }
-                else if (vis.selectedGenres.length > 2 && vis.selectedGenres[2] == d) { return "#c1bedf"; }
+                if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#6C6CA5"; }
+                else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9090BA"; }
+                else if (vis.selectedGenres.length > 2 && vis.selectedGenres[2] == d) { return "#BDBDD6"; }
                 else { return "#ffffff" }
             })
         vis.genreButtonGroup.selectAll(".genre-button")
@@ -178,7 +178,7 @@ class TestSelection {
             .text(d => d)
             .style("width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
-                if (vis.selectedMbti.includes(d)) { return "#74729a"; }
+                if (vis.selectedMbti.includes(d)) { return "#8282B2"; }
                 else { return "#ffffff" }
             })
         vis.mbtiButtons = vis.mbtiButtonGroup.selectAll(".mbti-button")

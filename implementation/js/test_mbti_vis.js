@@ -63,9 +63,9 @@ class TestMbtiVis {
         vis.r = d3.scaleSqrt()
             .range([20, vis.width/14]);
         vis.colorPositive = d3.scaleSequential()
-            .range(["#FFFFFF", "#74729a"]);
+            .range(["#FFFFFF", "#6C6CA5"]);
         vis.colorNegative = d3.scaleSequential()
-            .range(["#FFFFFF", "#666666"]);
+            .range(["#FFFFFF", "#6e6b62"]);
 
 
         vis.centers = {
