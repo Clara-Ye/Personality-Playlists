@@ -451,7 +451,9 @@ main{
     cursor: pointer;
 }
 
-.switch-baseline-button:hover {
+.switch-baseline-button:hover,
+.shuffle-button:hover,
+.proceed-button:hover {
     cursor: pointer;
 }
 

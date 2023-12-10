@@ -99,28 +99,54 @@ class TestMbtiVis {
 
         vis.baseline = 'same_genres';
 
-        /*
-        vis.baselineButton = vis.svg.append("g")
-            .attr("class", "button switch-baseline-button")
-            .attr("id", "switch-button-mbti");
 
-        vis.baselineButton.append("rect")
-            .attr("x", vis.width / 2 - 70)
+        vis.shuffleButton = vis.svg.append("g")
+            .attr("class", "button shuffle-button")
+            .attr("id", "shuffle-button-mbti");
+
+        vis.shuffleButton.append("rect")
+            .attr("x", vis.width / 2 - 130)
             .attr("y", vis.height - 50)
-            .attr("width", 140)
+            .attr("width", 100)
             .attr("height", 30)
             .attr("fill", "#FFFFFF")
             .style("stroke", "black")
             .style("stroke-width", "2px");
 
-        vis.baselineButton.append("text")
-            .attr("x", vis.width / 2)
+        vis.shuffleButton.append("text")
+            .attr("x", vis.width / 2 - 80)
             .attr("y", vis.height - 30)
             .attr("text-anchor", "middle")
-            .text("Switch Baseline");
+            .text("Shuffle");
 
-        vis.baselineButton.on("click", function(event) { vis.switchBaseline(event, vis); } );
-        */
+        vis.shuffleButton.on("click", function() { vis.wrangleData(); } );
+
+        vis.proceedButton = vis.svg.append("g")
+            .attr("class", "button proceed-button")
+            .attr("id", "proceed-button-mbti");
+
+        vis.proceedButton.append("rect")
+            .attr("x", vis.width / 2 + 30)
+            .attr("y", vis.height - 50)
+            .attr("width", 100)
+            .attr("height", 30)
+            .attr("fill", "#FFFFFF")
+            .style("stroke", "black")
+            .style("stroke-width", "2px");
+
+        vis.proceedButton.append("text")
+            .attr("x", vis.width / 2 + 80)
+            .attr("y", vis.height - 30)
+            .attr("text-anchor", "middle")
+            .text("Proceed");
+
+        vis.proceedButton.on("click", function() {
+            document.getElementById("section8")
+                .scrollIntoView({
+                    behavior: 'smooth'
+                }); }
+        );
+
         vis.wrangleData();
         vis.updateVis();
     }

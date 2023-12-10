@@ -271,7 +271,7 @@ class TestSelection {
             }
 
             // scroll to result visualization
-            document.getElementById("test_vis").scrollIntoView({
+            document.getElementById("section7").scrollIntoView({
                 behavior: 'smooth'
             });
 

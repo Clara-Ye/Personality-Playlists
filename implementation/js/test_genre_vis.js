@@ -112,6 +112,53 @@ class TestGenreVis {
 
         vis.baselineButton.on("click", function(event) { vis.switchBaseline(event, vis); } );
 
+        vis.shuffleButton = vis.svg.append("g")
+            .attr("class", "button shuffle-button")
+            .attr("id", "shuffle-button-genre");
+
+        vis.shuffleButton.append("rect")
+            .attr("x", vis.width / 2 - 220)
+            .attr("y", vis.height - 50)
+            .attr("width", 100)
+            .attr("height", 30)
+            .attr("fill", "#FFFFFF")
+            .style("stroke", "black")
+            .style("stroke-width", "2px");
+
+        vis.shuffleButton.append("text")
+            .attr("x", vis.width / 2 - 170)
+            .attr("y", vis.height - 30)
+            .attr("text-anchor", "middle")
+            .text("Shuffle");
+
+        vis.shuffleButton.on("click", function(event) { vis.wrangleData(); } );
+
+        vis.proceedButton = vis.svg.append("g")
+            .attr("class", "button proceed-button")
+            .attr("id", "proceed-button-genre");
+
+        vis.proceedButton.append("rect")
+            .attr("x", vis.width / 2 + 120)
+            .attr("y", vis.height - 50)
+            .attr("width", 100)
+            .attr("height", 30)
+            .attr("fill", "#FFFFFF")
+            .style("stroke", "black")
+            .style("stroke-width", "2px");
+
+        vis.proceedButton.append("text")
+            .attr("x", vis.width / 2 + 170)
+            .attr("y", vis.height - 30)
+            .attr("text-anchor", "middle")
+            .text("Proceed");
+
+        vis.proceedButton.on("click", function() {
+            document.getElementById("section8")
+                .scrollIntoView({
+                    behavior: 'smooth'
+                }); }
+        );
+
         vis.wrangleData();
         vis.updateVis();
     }
