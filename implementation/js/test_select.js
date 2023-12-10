@@ -155,7 +155,7 @@ class TestSelection {
             .merge(vis.genreButtons)
             .transition()
             .duration(200)
-            .text(d => d)
+            .text(d => d.charAt(0).toUpperCase() + d.slice(1))
             .style("min-width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
                 if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#6C6CA5"; }
@@ -212,7 +212,7 @@ class TestSelection {
         if (vis.selectedGenres.includes(d)) {
             // clear current selection
             vis.selectedGenres.splice(vis.selectedGenres.indexOf(d), 1);
-            // current selection not in existing selection
+        // current selection not in existing selection
         } else {
             // <3 existing selection
             if (vis.selectedGenres.length < 3) {
@@ -224,6 +224,12 @@ class TestSelection {
                 vis.selectedGenres.pop();
                 vis.selectedGenres.push(d);
             }
+        }
+
+        if (vis.selectedGenres.length == 0) {
+            vis.genreIcon.attr("src", "img/genre_unknown.png");
+        } else {
+            vis.genreIcon.attr("src", `img/genre_figures/${vis.selectedGenres[0]}.png`);
         }
 
         vis.wrangleData();
@@ -240,11 +246,14 @@ class TestSelection {
         if (vis.selectedMbti.length == 0 || vis.selectedMbti[0] != d) {
             // update selection to be current selection
             vis.selectedMbti = [d];
-            // current selection is same as existing selection
+            vis.mbtiIcon.attr("src", `img/MBTI/${d.toUpperCase()}.png`);
+        // current selection is same as existing selection
         } else {
             // clear current selection
             vis.selectedMbti = [];
+            vis.mbtiIcon.attr("src", "img/mbti_unknown.png");
         }
+
 
         vis.updateVis();
     }
