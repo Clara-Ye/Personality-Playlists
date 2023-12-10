@@ -592,6 +592,7 @@ main{
     text-align: center;
     background-size: cover;
     background-repeat: no-repeat;
+    font-size: 11px;
     width: 240px;
     height: 180px;
     color: black;

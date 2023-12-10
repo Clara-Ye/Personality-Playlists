@@ -26,7 +26,7 @@ class mbtiMapVis {
         let selectContainer = vis.mainContainer.append("div")
             .attr("class", "select-container")
             .style("margin-left", "13%")
-            .style("background", `url('img/sketch/rect_5.png')`)
+            .style("background", `url('img/sketch/rect_5_selection.png')`)
             .style("background-size", "100% 100%")
             .style("width", "10%")
             .style("height", "50px")
@@ -96,23 +96,24 @@ class mbtiMapVis {
             .attr("width", "80%")
             .attr("height", vis.height)
             .attr("x", "20%")
-            .attr("y", "30%");
+            .attr("y", "20%");
 
         // mbti image container
         vis.imageContainer = d3.select("#" + vis.parentElement).select(".map-image-container");
 
         vis.imageContainer = vis.mainContainer.append("div")
             .attr("class", "map-image-container")
-            .style("margin-left", 0)
+            .style("margin-left",  "-23%")
+            .style("margin-top", "30%")
             .style("text-align", "center");
 
         // Append SVG to the main container
         vis.svg = vis.mainContainer.append("svg")
 
         //adjust the scale by zoom factor
-        let zoomFactor = vis.height / 600;
+        let zoomFactor = vis.width / 500;
         let defaultScale = 230;
-        vis.mapPosition = 0.2;
+        vis.mapPosition = 0.35;
         vis.projection = d3
             .geoOrthographic()
             // .geoStereographic()
@@ -184,7 +185,7 @@ class mbtiMapVis {
         vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
 
         //adjust the scale by zoom factor
-        let zoomFactor = vis.width / 1200;
+        let zoomFactor = vis.width / 1000;
         let defaultScale = 200;
 
         vis.projection
@@ -286,7 +287,7 @@ class mbtiMapVis {
 
         vis.imageContainer.append("img")
             .attr("src", `img/MBTI/${vis.selectedMBTIType}.png`)
-            .style("width", "300px")
+            .style("width", "250px")
             .style("height", "auto");
 
         vis.colorScale = vis.colorScaleList[vis.selectedMBTIType];
@@ -321,11 +322,13 @@ class mbtiMapVis {
 
                 maxValue = (maxValue * 100).toFixed(2);
                 minValue = (minValue * 100).toFixed(2);
+                mbtiValue = (mbtiValue * 100).toFixed(2);
 
                 tooltipHtml = `
                 <div>
                     <strong><p>${countryKey}</p></strong>
                     <p class="${vis.mapMBTIToClass(maxType)}">${maxType} (most): ${maxValue}%</p>
+                    <p class="${vis.mapMBTIToClass(vis.selectedMBTIType)}">${vis.selectedMBTIType} (selected): ${mbtiValue}%</p>
                     <p class="${vis.mapMBTIToClass(minType)}">${minType} (least): ${minValue}%</p>
                 </div>`;
             }
@@ -354,9 +357,9 @@ class mbtiMapVis {
         vis.foreignObject.append("xhtml:div").attr("class", "map-text-svg")
             .html(`
                 <h3 style="color: ${vis.fontColor};left: ${vis.highCountryPadding}%">${vis.highCountry}</h3>
-                <br><br><br><br><br><br><br><br>
+                <br><br><br>
                 <span> has the <strong style="color: ${vis.fontColor}">LARGEST</strong> percentage of</span>
-                <p> 👆 personality type</p>
+                <p> 👇 personality type</p>
             `);
 
         //draw countries

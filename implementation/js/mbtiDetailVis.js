@@ -43,8 +43,8 @@ class mbtiDetailVis {
             'T': 'F', 'F': 'T',
             'J': 'P', 'P': 'J'
         };
-        vis.order = ['E', 'I', 'N', 'S', 'T', 'F', 'J', 'P'];
-        vis.leftGroup = ['E', 'N', 'T', 'J'];
+        vis.order = ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P'];
+        vis.leftGroup = ['E', 'S', 'T', 'J'];
         vis.rightGroup = ['I', 'S', 'F', 'P'];
 
         vis.buttonContainer = d3.select('#' + vis.parentElement).append('div')
