@@ -155,12 +155,12 @@ class TestSelection {
             .merge(vis.genreButtons)
             .transition()
             .duration(200)
-            .text(d => d)
+            .text(d => d.charAt(0).toUpperCase() + d.slice(1))
             .style("min-width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
-                if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#74729a"; }
-                else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9d9bc2"; }
-                else if (vis.selectedGenres.length > 2 && vis.selectedGenres[2] == d) { return "#c1bedf"; }
+                if (vis.selectedGenres.length > 0 && vis.selectedGenres[0] == d) { return "#6C6CA5"; }
+                else if (vis.selectedGenres.length > 1 && vis.selectedGenres[1] == d) { return "#9090BA"; }
+                else if (vis.selectedGenres.length > 2 && vis.selectedGenres[2] == d) { return "#BDBDD6"; }
                 else { return "#ffffff" }
             })
         vis.genreButtonGroup.selectAll(".genre-button")
@@ -178,7 +178,7 @@ class TestSelection {
             .text(d => d)
             .style("width", `${vis.width / 2 * 0.7 / 4 - 12}px`)
             .style("background-color", d => {
-                if (vis.selectedMbti.includes(d)) { return "#74729a"; }
+                if (vis.selectedMbti.includes(d)) { return "#8282B2"; }
                 else { return "#ffffff" }
             })
         vis.mbtiButtons = vis.mbtiButtonGroup.selectAll(".mbti-button")
@@ -200,6 +200,19 @@ class TestSelection {
             vis.confirmButton
                 .on("click", null);
         }
+
+        if (vis.selectedGenres.length == 0) {
+            vis.genreIcon.attr("src", "img/genre_unknown.png");
+        } else {
+            vis.genreIcon.attr("src", `img/genre_figures/${vis.selectedGenres[0]}.png`);
+        }
+
+        if (vis.selectedMbti.length == 0) {
+            vis.mbtiIcon.attr("src", "img/mbti_unknown.png");
+        } else {
+            vis.mbtiIcon.attr("src", `img/MBTI/${vis.selectedMbti[0].toUpperCase()}.png`);
+        }
+
     }
 
 
@@ -212,7 +225,7 @@ class TestSelection {
         if (vis.selectedGenres.includes(d)) {
             // clear current selection
             vis.selectedGenres.splice(vis.selectedGenres.indexOf(d), 1);
-            // current selection not in existing selection
+        // current selection not in existing selection
         } else {
             // <3 existing selection
             if (vis.selectedGenres.length < 3) {
@@ -240,12 +253,11 @@ class TestSelection {
         if (vis.selectedMbti.length == 0 || vis.selectedMbti[0] != d) {
             // update selection to be current selection
             vis.selectedMbti = [d];
-            // current selection is same as existing selection
+        // current selection is same as existing selection
         } else {
             // clear current selection
             vis.selectedMbti = [];
         }
-
         vis.updateVis();
     }
 
@@ -271,7 +283,7 @@ class TestSelection {
             }
 
             // scroll to result visualization
-            document.getElementById("test_vis").scrollIntoView({
+            document.getElementById("section7").scrollIntoView({
                 behavior: 'smooth'
             });
 

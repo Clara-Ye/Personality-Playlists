@@ -133,7 +133,7 @@ class RadarVis {
             .merge(vis.paths)
             .datum(d => vis.getPathCoordinates(d, vis))
             .attr("d", vis.line)
-            .attr("fill", "#74729a")
+            .attr("fill", "#6C6CA5")
             .attr("stroke-opacity", 1)
             .attr("opacity", 0.85);
 

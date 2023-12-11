@@ -96,7 +96,7 @@ class mbtiMapVis {
             .attr("width", "80%")
             .attr("height", vis.height)
             .attr("x", "20%")
-            .attr("y", "25%");
+            .attr("y", "20%");
 
         // mbti image container
         vis.imageContainer = d3.select("#" + vis.parentElement).select(".map-image-container");
